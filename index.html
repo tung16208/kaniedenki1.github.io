@@ -1,708 +1,570 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>作業指示フォーム｜株式会社A</title>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet" />
-  <!-- EmailJS SDK -->
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <style>
-    :root {
-      --bg: #f0f4f8;
-      --card: #ffffff;
-      --primary: #1a4a7a;
-      --primary-light: #2563a8;
-      --accent: #e85d2f;
-      --accent-light: #ff7a52;
-      --text: #1a2433;
-      --text-sub: #5a6a7a;
-      --border: #d0dce8;
-      --input-bg: #f8fafc;
-      --success: #1a9e5c;
-      --shadow: 0 4px 24px rgba(26,74,122,0.10);
-      --radius: 14px;
-    }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"/>
+<title>作業依頼システム｜カニエ電機株式会社</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+:root{
+  --navy:#0d2b4e;--navy2:#1a3f6b;--blue:#2563a8;
+  --orange:#e85d2f;--orange2:#ff7a52;
+  --bg:#eef2f7;--sur:#fff;--sur2:#f5f8fc;
+  --bdr:#d5dfe8;--txt:#0d2b4e;--txb:#2d3e52;--txs:#607080;
+  --rad:12px;--radl:18px;--rads:8px;
+  --shd:0 4px 20px rgba(13,43,78,.12);--shds:0 2px 8px rgba(13,43,78,.08);
+  --ok:#0f7c4a;--warn:#b45309;--err:#c82020;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);min-height:100vh;color:var(--txb);-webkit-font-smoothing:antialiased;}
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+/* AUTH */
+#authScreen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:20px;background:linear-gradient(160deg,var(--navy) 0%,var(--navy2) 55%,#1e4d8a 100%);position:relative;overflow:hidden;}
+#authScreen::before{content:'';position:absolute;top:-100px;right:-100px;width:350px;height:350px;border-radius:50%;background:rgba(255,255,255,0.03);}
+#authScreen::after{content:'';position:absolute;bottom:-80px;left:-80px;width:280px;height:280px;border-radius:50%;background:rgba(232,93,47,0.07);}
+.auth-box{width:min(420px,96vw);background:var(--sur);border-radius:var(--radl);box-shadow:0 8px 40px rgba(13,43,78,.25);overflow:hidden;position:relative;z-index:1;}
+.auth-logo-bar{background:linear-gradient(135deg,var(--navy),var(--navy2));padding:28px 28px 22px;text-align:center;border-bottom:3px solid var(--orange);}
+.auth-logo-bar .sub{color:rgba(255,255,255,.5);font-size:11px;margin-top:6px;letter-spacing:2px;}
+.auth-body{padding:26px 26px 22px;}
+.auth-tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--sur2);border:1.5px solid var(--bdr);border-radius:var(--rad);padding:4px;gap:4px;margin-bottom:20px;}
+.auth-tab{padding:11px 8px;border:none;background:transparent;font-size:13px;font-weight:600;font-family:inherit;color:var(--txs);cursor:pointer;border-radius:var(--rads);transition:.2s;display:flex;align-items:center;justify-content:center;gap:5px;}
+.auth-tab.active{background:var(--navy);color:#fff;box-shadow:0 2px 8px rgba(13,43,78,.25);}
+.fld{margin-bottom:14px;}
+.fld label{display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px;letter-spacing:.3px;}
+.fld input{width:100%;padding:12px 14px;border:1.5px solid var(--bdr);border-radius:var(--rads);font-size:14px;font-family:inherit;background:var(--sur2);color:var(--txt);outline:none;transition:.2s;}
+.fld input:focus{border-color:var(--blue);background:#fff;box-shadow:0 0 0 3px rgba(37,99,168,.1);}
+.auth-err{background:#fff5f5;border:1.5px solid #fca5a5;color:var(--err);padding:10px 14px;border-radius:var(--rads);font-size:12px;margin-bottom:12px;display:none;}
+.btn-login{width:100%;padding:14px;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#fff;border:none;border-radius:var(--rads);font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;letter-spacing:.5px;transition:.2s;box-shadow:0 4px 14px rgba(232,93,47,.35);}
+.btn-login:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(232,93,47,.4);}
+.auth-hint{text-align:center;margin-top:12px;font-size:11px;color:var(--txs);}
 
-    body {
-      font-family: 'Noto Sans JP', sans-serif;
-      background: var(--bg);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 0 0 48px;
-    }
+/* APP */
+#appShell{display:none;min-height:100vh;flex-direction:column;}
+.topbar{background:linear-gradient(135deg,var(--navy),var(--navy2));padding:0 16px;display:flex;align-items:center;justify-content:space-between;height:54px;flex-shrink:0;border-bottom:3px solid var(--orange);position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(13,43,78,.3);}
+.tb-brand{display:flex;align-items:center;gap:10px;}
+.tb-name{color:#fff;font-size:14px;font-weight:700;letter-spacing:.3px;}
+.tb-sub{color:rgba(255,255,255,.5);font-size:9px;letter-spacing:2px;text-transform:uppercase;}
+.tb-right{display:flex;align-items:center;gap:8px;}
+.user-pill{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.9);padding:5px 11px;border-radius:99px;font-size:11px;font-weight:500;display:flex;align-items:center;gap:5px;max-width:150px;}
+.u-dot{width:6px;height:6px;border-radius:50%;background:var(--orange);flex-shrink:0;}
+.btn-out{background:transparent;border:1.5px solid rgba(255,255,255,.3);color:rgba(255,255,255,.8);padding:6px 12px;border-radius:var(--rads);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:.2s;}
+.btn-out:hover{border-color:rgba(255,255,255,.6);color:#fff;}
+.content{flex:1;padding:16px 16px 88px;max-width:660px;margin:0 auto;width:100%;}
+.page{display:none;}
+.page.active{display:block;}
+.ph{margin-bottom:18px;}
+.ph h2{font-size:20px;font-weight:700;color:var(--navy);}
+.ph p{font-size:12px;color:var(--txs);margin-top:2px;}
+.ph-line{height:3px;width:36px;background:var(--orange);border-radius:2px;margin-top:7px;}
 
-    /* ── Header ── */
-    header {
-      width: 100%;
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-      color: #fff;
-      padding: 28px 24px 22px;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-    header::before {
-      content: '';
-      position: absolute;
-      top: -40px; right: -40px;
-      width: 160px; height: 160px;
-      background: rgba(255,255,255,0.07);
-      border-radius: 50%;
-    }
-    header::after {
-      content: '';
-      position: absolute;
-      bottom: -30px; left: -20px;
-      width: 120px; height: 120px;
-      background: rgba(255,255,255,0.05);
-      border-radius: 50%;
-    }
-    .header-badge {
-      display: inline-block;
-      background: rgba(255,255,255,0.15);
-      border: 1px solid rgba(255,255,255,0.25);
-      color: rgba(255,255,255,0.9);
-      font-size: 11px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      padding: 4px 14px;
-      border-radius: 99px;
-      margin-bottom: 10px;
-      font-weight: 400;
-    }
-    header h1 {
-      font-family: 'Zen Kaku Gothic New', sans-serif;
-      font-size: clamp(20px, 5vw, 26px);
-      font-weight: 700;
-      letter-spacing: 1px;
-    }
-    header p {
-      font-size: 13px;
-      color: rgba(255,255,255,0.75);
-      margin-top: 6px;
-    }
+/* CARD */
+.card{background:var(--sur);border-radius:var(--radl);box-shadow:var(--shds);border:1px solid var(--bdr);padding:20px;margin-bottom:16px;}
 
-    /* ── Card ── */
-    .card {
-      width: min(560px, 94vw);
-      background: var(--card);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 32px 28px 28px;
-      margin-top: 28px;
-    }
+/* COMPANY BADGE */
+.co-badge{background:linear-gradient(90deg,#eef4fb,#f5f8fc);border:1.5px solid #c5d6e8;border-radius:var(--rad);padding:14px 16px;margin-bottom:20px;display:flex;align-items:center;gap:12px;}
+.co-icon{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--navy),var(--blue));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.co-lbl{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--blue);margin-bottom:2px;}
+.co-name{font-size:16px;font-weight:700;color:var(--navy);}
 
-    /* ── Section label ── */
-    .section-label {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--primary);
-      margin-bottom: 18px;
-      padding-bottom: 8px;
-      border-bottom: 2px solid var(--border);
-    }
-    .section-label span.dot {
-      width: 8px; height: 8px;
-      background: var(--accent);
-      border-radius: 50%;
-      display: inline-block;
-    }
+/* FORM LABELS */
+.flbl{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--navy);margin-bottom:10px;}
+.req{font-size:10px;background:var(--orange);color:#fff;padding:2px 8px;border-radius:99px;font-weight:700;}
+.opt{font-size:10px;background:#e0eaf5;color:var(--blue);padding:2px 8px;border-radius:99px;font-weight:500;}
 
-    /* ── Facility row (fixed) ── */
-    .facility-row {
-      display: flex;
-      align-items: center;
-      background: linear-gradient(90deg, #eef4fb, #f8fafc);
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-      padding: 13px 18px;
-      margin-bottom: 24px;
-      gap: 10px;
-    }
-    .facility-tag {
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 1.5px;
-      color: var(--primary);
-      background: rgba(26,74,122,0.1);
-      padding: 3px 10px;
-      border-radius: 99px;
-      text-transform: uppercase;
-      white-space: nowrap;
-    }
-    .facility-name {
-      font-family: 'Zen Kaku Gothic New', sans-serif;
-      font-size: 17px;
-      font-weight: 700;
-      color: var(--text);
-    }
+/* RADIO PILLS */
+.rpills{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.rp input[type="radio"]{display:none;}
+.rp label{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:11px 6px;border:1.5px solid var(--bdr);border-radius:var(--rad);cursor:pointer;font-size:12px;font-weight:600;color:var(--txs);background:var(--sur2);transition:.18s;user-select:none;text-align:center;}
+.rp label .ri{font-size:20px;}
+.rp input:checked+label{border-color:var(--navy);background:#eef4fb;color:var(--navy);box-shadow:0 0 0 3px rgba(13,43,78,.1);}
+.rp label:hover{border-color:var(--blue);}
 
-    /* ── Form groups ── */
-    .form-group {
-      margin-bottom: 22px;
-    }
-    label.field-label {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 10px;
-    }
-    label.field-label .req {
-      font-size: 10px;
-      background: var(--accent);
-      color: #fff;
-      padding: 2px 7px;
-      border-radius: 99px;
-      font-weight: 700;
-    }
-    label.field-label .opt {
-      font-size: 10px;
-      background: #e0e8f0;
-      color: var(--text-sub);
-      padding: 2px 7px;
-      border-radius: 99px;
-      font-weight: 500;
-    }
+/* DEVICES */
+.dgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.di input[type="checkbox"]{display:none;}
+.di label{display:flex;align-items:center;gap:9px;padding:12px 13px;border:1.5px solid var(--bdr);border-radius:var(--rad);cursor:pointer;font-size:13px;font-weight:500;color:var(--txs);background:var(--sur2);transition:.18s;user-select:none;}
+.di input:checked+label{border-color:var(--navy);background:#eef4fb;color:var(--navy);font-weight:700;}
+.di label:hover{border-color:var(--blue);}
+.di-ico{font-size:19px;flex-shrink:0;}
+.chk{width:18px;height:18px;border:1.5px solid var(--bdr);border-radius:5px;margin-left:auto;display:flex;align-items:center;justify-content:center;font-size:10px;color:transparent;transition:.15s;flex-shrink:0;}
+.di input:checked+label .chk{background:var(--navy);border-color:var(--navy);color:#fff;}
+.mnum{max-height:0;overflow:hidden;transition:max-height .3s,opacity .3s,margin .3s;opacity:0;}
+.mnum.show{max-height:60px;opacity:1;margin-top:8px;}
+.mnum-in{display:flex;align-items:center;gap:8px;background:#eef4fb;border:1.5px solid var(--blue);border-radius:8px;padding:8px 12px;}
+.mnum-in label{font-size:11px;font-weight:700;color:var(--navy);white-space:nowrap;}
+.mnum-in input{flex:1;border:1.5px solid var(--bdr);border-radius:6px;padding:6px 10px;font-size:13px;font-family:inherit;background:#fff;outline:none;}
+.mnum-in input:focus{border-color:var(--blue);}
+textarea{width:100%;padding:12px 14px;border:1.5px solid var(--bdr);border-radius:var(--rads);font-size:14px;font-family:inherit;background:var(--sur2);resize:vertical;min-height:88px;outline:none;transition:.2s;color:var(--txt);}
+textarea:focus{border-color:var(--blue);background:#fff;box-shadow:0 0 0 3px rgba(37,99,168,.1);}
+.tinput{width:100%;padding:12px 14px;border:1.5px solid var(--bdr);border-radius:var(--rads);font-size:14px;font-family:inherit;background:var(--sur2);outline:none;transition:.2s;color:var(--txt);}
+.tinput:focus{border-color:var(--blue);background:#fff;box-shadow:0 0 0 3px rgba(37,99,168,.1);}
+.frow{margin-bottom:20px;}
+.btn-send{width:100%;padding:15px;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#fff;border:none;border-radius:var(--rad);font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 16px rgba(232,93,47,.35);transition:.2s;letter-spacing:.5px;}
+.btn-send:hover{transform:translateY(-1px);}
+.btn-send:disabled{opacity:.55;cursor:not-allowed;transform:none;}
 
-    /* Radio group */
-    .radio-group {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .radio-btn {
-      flex: 1;
-      min-width: 100px;
-    }
-    .radio-btn input[type="radio"] { display: none; }
-    .radio-btn label {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 7px;
-      padding: 11px 16px;
-      border: 2px solid var(--border);
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text-sub);
-      background: var(--input-bg);
-      transition: all 0.18s ease;
-      user-select: none;
-    }
-    .radio-btn input[type="radio"]:checked + label {
-      border-color: var(--primary);
-      background: #eef4fb;
-      color: var(--primary);
-      font-weight: 700;
-      box-shadow: 0 2px 10px rgba(26,74,122,0.12);
-    }
-    .radio-btn label:hover {
-      border-color: var(--primary-light);
-      color: var(--primary);
-    }
+/* HISTORY */
+.hlist{display:flex;flex-direction:column;gap:10px;}
+.hcard{background:var(--sur);border:1px solid var(--bdr);border-radius:var(--rad);padding:14px 16px;border-left:4px solid var(--bdr);}
+.hcard.s-miteii{border-left-color:#f59e0b;}
+.hcard.s-jissyu{border-left-color:#3b82f6;}
+.hcard.s-kanryo{border-left-color:#10b981;}
+.hc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px;}
+.hc-t{font-size:13px;font-weight:700;color:var(--navy);}
+.hc-d{font-size:11px;color:var(--txs);white-space:nowrap;}
+.hc-r{font-size:12px;color:var(--txs);margin-top:3px;}
+.hc-s{display:inline-flex;align-items:center;gap:5px;background:#eef4fb;border:1px solid #c5d6e8;color:var(--blue);padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600;margin-top:8px;}
 
-    /* Checkbox group for 機器 */
-    .device-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-    .device-item { }
-    .device-item input[type="checkbox"] { display: none; }
-    .device-item label {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 11px 14px;
-      border: 2px solid var(--border);
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text-sub);
-      background: var(--input-bg);
-      transition: all 0.18s ease;
-      user-select: none;
-    }
-    .device-item input[type="checkbox"]:checked + label {
-      border-color: var(--primary);
-      background: #eef4fb;
-      color: var(--primary);
-      font-weight: 700;
-    }
-    .device-item label:hover {
-      border-color: var(--primary-light);
-    }
-    .device-item label .icon {
-      font-size: 20px;
-      line-height: 1;
-    }
-    .check-mark {
-      width: 18px; height: 18px;
-      border: 2px solid var(--border);
-      border-radius: 5px;
-      margin-left: auto;
-      flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      transition: all 0.15s;
-      font-size: 11px;
-      color: transparent;
-    }
-    .device-item input[type="checkbox"]:checked + label .check-mark {
-      background: var(--primary);
-      border-color: var(--primary);
-      color: #fff;
-    }
+/* BADGES */
+.bdg{display:inline-flex;align-items:center;gap:3px;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700;}
+.bdg::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.7;}
+.b-m{background:#fef3c7;color:#92400e;}
+.b-j{background:#dbeafe;color:#1e40af;}
+.b-k{background:#d1fae5;color:#065f46;}
 
-    /* Machine number input (hidden until checked) */
-    .machine-num-wrap {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.3s ease, opacity 0.3s ease, margin 0.3s ease;
-      opacity: 0;
-      margin-top: 0;
-    }
-    .machine-num-wrap.show {
-      max-height: 80px;
-      opacity: 1;
-      margin-top: 8px;
-    }
-    .machine-num-inner {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: #f0f6ff;
-      border: 1.5px solid #b8d0ec;
-      border-radius: 9px;
-      padding: 9px 14px;
-    }
-    .machine-num-inner label {
-      font-size: 12px;
-      color: var(--primary);
-      font-weight: 600;
-      white-space: nowrap;
-    }
-    .machine-num-inner input {
-      width: 80px;
-      border: 1.5px solid #b8d0ec;
-      border-radius: 7px;
-      padding: 5px 10px;
-      font-size: 14px;
-      font-family: inherit;
-      color: var(--text);
-      background: #fff;
-      text-align: center;
-    }
-    .machine-num-inner input:focus {
-      outline: none;
-      border-color: var(--primary);
-    }
-    .machine-num-inner span {
-      font-size: 12px;
-      color: var(--text-sub);
-    }
+/* STAFF */
+.sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px;}
+.sc{background:var(--sur);border:1px solid var(--bdr);border-radius:var(--rad);padding:14px 12px;text-align:center;}
+.sn{font-size:28px;font-weight:700;color:var(--navy);}
+.sl{font-size:11px;color:var(--txs);margin-top:2px;}
+.sc.sw .sn{color:#d97706;}
+.sc.sg .sn{color:#059669;}
+.fbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.fbar select{flex:1;min-width:110px;border:1.5px solid var(--bdr);border-radius:var(--rads);padding:9px 11px;font-size:12px;font-family:inherit;background:var(--sur);color:var(--txt);outline:none;cursor:pointer;}
+.btn-xl{background:var(--navy);color:#fff;border:none;border-radius:var(--rads);padding:9px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px;white-space:nowrap;transition:.2s;}
+.btn-xl:hover{background:var(--blue);}
+.rlist{display:flex;flex-direction:column;gap:10px;}
+.rc{background:var(--sur);border:1px solid var(--bdr);border-radius:var(--rad);overflow:hidden;border-top:3px solid var(--bdr);}
+.rc.s-miteii{border-top-color:#f59e0b;}
+.rc.s-jissyu{border-top-color:#3b82f6;}
+.rc.s-kanryo{border-top-color:#10b981;}
+.rc-body{padding:14px 16px;}
+.rc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.rc-co{font-size:11px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;background:var(--navy);color:#fff;padding:3px 10px;border-radius:99px;}
+.rc-date{font-size:11px;color:var(--txs);}
+.rc-shiji{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:4px;}
+.rc-kiki{font-size:12px;color:var(--txs);margin-bottom:8px;}
+.rc-biko{font-size:12px;color:var(--txb);background:var(--sur2);border-radius:6px;padding:8px 10px;margin-bottom:10px;border-left:3px solid var(--orange);}
+.rc-ft{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-top:10px;border-top:1px solid var(--bdr);}
+.rc-tanto{font-size:12px;color:var(--txs);display:flex;align-items:center;gap:4px;}
+.rc-staff{display:flex;align-items:center;gap:5px;background:#eef4fb;color:var(--blue);border:1px solid #c5d6e8;border-radius:99px;padding:3px 10px;font-size:11px;font-weight:700;}
+.ssel{border:1.5px solid var(--bdr);border-radius:var(--rads);padding:6px 10px;font-size:12px;font-family:inherit;background:var(--sur);outline:none;cursor:pointer;margin-left:auto;}
+.ssel.sm{background:#fef3c7;color:#92400e;border-color:#fcd34d;}
+.ssel.sj{background:#dbeafe;color:#1e40af;border-color:#93c5fd;}
+.ssel.sk{background:#d1fae5;color:#065f46;border-color:#6ee7b7;}
+.btn-acc{background:var(--orange);color:#fff;border:none;border-radius:var(--rads);padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px;transition:.2s;white-space:nowrap;}
+.btn-acc:hover{background:var(--orange2);}
+.btn-acc:disabled{background:#9ca3af;cursor:not-allowed;}
+.btn-acc.done{background:#e0eaf5;color:var(--blue);}
+.btn-taihi{background:#f0fdf4;color:#065f46;border:1.5px solid #6ee7b7;border-radius:var(--rads);padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px;transition:.2s;white-space:nowrap;}
+.btn-taihi:hover{background:#dcfce7;border-color:#34d399;}
+.btn-taihi:disabled{opacity:.4;cursor:not-allowed;}
 
-    /* Text inputs / textarea */
-    textarea, input[type="text"] {
-      width: 100%;
-      border: 2px solid var(--border);
-      border-radius: 10px;
-      padding: 12px 14px;
-      font-size: 14px;
-      font-family: inherit;
-      color: var(--text);
-      background: var(--input-bg);
-      resize: vertical;
-      transition: border-color 0.18s;
-    }
-    textarea:focus, input[type="text"]:focus {
-      outline: none;
-      border-color: var(--primary);
-      background: #fff;
-    }
-    textarea { min-height: 90px; line-height: 1.6; }
+/* COMMENT SECTION */
+.cmt-area{margin-top:10px;border-top:1px solid var(--bdr);padding-top:10px;}
+.cmt-list{display:flex;flex-direction:column;gap:6px;margin-bottom:8px;}
+.cmt-item{background:var(--sur2);border-radius:var(--rads);padding:8px 12px;border-left:3px solid var(--blue);}
+.cmt-meta{font-size:10px;color:var(--txs);margin-bottom:3px;display:flex;gap:8px;}
+.cmt-text{font-size:12px;color:var(--txb);}
+.cmt-form{display:flex;gap:6px;align-items:flex-end;}
+.cmt-form textarea{flex:1;min-height:52px;font-size:12px;padding:8px 10px;resize:none;}
+.btn-cmt{background:var(--navy);color:#fff;border:none;border-radius:var(--rads);padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;transition:.2s;align-self:flex-end;}
+.btn-cmt:hover{background:var(--blue);}
 
-    /* ── Divider ── */
-    .divider {
-      height: 1px;
-      background: var(--border);
-      margin: 24px 0;
-    }
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(13,43,78,.5);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(2px);}
+.modal-box{background:var(--sur);border-radius:var(--radl);box-shadow:0 8px 40px rgba(13,43,78,.3);width:min(380px,96vw);overflow:hidden;}
+.modal-hd{background:linear-gradient(135deg,var(--navy),var(--navy2));padding:18px 20px;display:flex;align-items:center;justify-content:space-between;}
+.modal-hd h3{color:#fff;font-size:15px;font-weight:700;}
+.modal-close{background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;}
+.modal-body{padding:20px;}
+.modal-body .fld{margin-bottom:14px;}
+.modal-body label{display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px;}
+.modal-body select,.modal-body input{width:100%;padding:11px 13px;border:1.5px solid var(--bdr);border-radius:var(--rads);font-size:14px;font-family:inherit;background:var(--sur2);outline:none;}
+.modal-body select:focus,.modal-body input:focus{border-color:var(--blue);}
+.modal-ft{display:flex;gap:8px;padding:0 20px 20px;}
+.btn-modal-ok{flex:1;padding:12px;background:linear-gradient(135deg,#059669,#10b981);color:#fff;border:none;border-radius:var(--rads);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:.2s;}
+.btn-modal-ok:hover{opacity:.9;}
+.btn-modal-cancel{flex:1;padding:12px;background:var(--sur2);color:var(--txb);border:1.5px solid var(--bdr);border-radius:var(--rads);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:.2s;}
+.btn-modal-cancel:hover{border-color:var(--blue);color:var(--navy);}
 
-    /* ── Submit button ── */
-    .btn-submit {
-      width: 100%;
-      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
-      color: #fff;
-      border: none;
-      border-radius: 12px;
-      padding: 16px;
-      font-size: 16px;
-      font-weight: 700;
-      font-family: inherit;
-      letter-spacing: 1px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      box-shadow: 0 4px 16px rgba(232,93,47,0.3);
-      transition: all 0.2s ease;
-      position: relative;
-      overflow: hidden;
-    }
-    .btn-submit:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(232,93,47,0.35);
-    }
-    .btn-submit:active { transform: translateY(0); }
-    .btn-submit:disabled {
-      background: linear-gradient(135deg, #aaa, #ccc);
-      box-shadow: none;
-      cursor: not-allowed;
-      transform: none;
-    }
-    .btn-submit .send-icon { font-size: 20px; }
+/* BOTTOM NAV */
+.bnav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:var(--sur);border-top:1.5px solid var(--bdr);display:flex;box-shadow:0 -4px 20px rgba(13,43,78,.1);padding-bottom:env(safe-area-inset-bottom,0);}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:9px 4px 7px;border:none;background:none;cursor:pointer;font-size:10px;font-family:inherit;color:var(--txs);font-weight:500;transition:.2s;gap:3px;position:relative;}
+.nb.active{color:var(--navy);}
+.nb-ico{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;transition:.2s;}
+.nb.active .nb-ico{background:var(--navy);color:#fff;}
+.nbadge{position:absolute;top:5px;right:calc(50% - 22px);min-width:16px;height:16px;border-radius:99px;background:var(--orange);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 4px;border:2px solid var(--sur);}
 
-    /* ── Toast / Status ── */
-    #toast {
-      position: fixed;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%) translateY(20px);
-      background: var(--success);
-      color: #fff;
-      padding: 14px 28px;
-      border-radius: 12px;
-      font-size: 14px;
-      font-weight: 700;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-      opacity: 0;
-      transition: all 0.35s ease;
-      z-index: 999;
-      text-align: center;
-      min-width: 260px;
-    }
-    #toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-    #toast.error { background: #c0392b; }
+/* EMPTY */
+.empty{text-align:center;padding:48px 20px;}
+.empty .ei{font-size:44px;margin-bottom:10px;opacity:.35;}
+.empty p{color:var(--txs);font-size:13px;}
 
-    /* ── Setup banner ── */
-    .setup-banner {
-      width: min(560px, 94vw);
-      background: linear-gradient(135deg, #fff8e1, #fff3cd);
-      border: 2px solid #f0c040;
-      border-radius: var(--radius);
-      padding: 18px 22px;
-      margin-top: 16px;
-    }
-    .setup-banner h3 {
-      font-size: 13px;
-      font-weight: 700;
-      color: #7a5500;
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .setup-banner ol {
-      padding-left: 18px;
-      font-size: 12px;
-      color: #5a4400;
-      line-height: 1.8;
-    }
-    .setup-banner code {
-      background: rgba(0,0,0,0.08);
-      padding: 1px 6px;
-      border-radius: 4px;
-      font-size: 11px;
-    }
+/* TOAST */
+#toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--navy);color:#fff;padding:11px 22px;border-radius:99px;font-size:13px;font-weight:600;opacity:0;transition:all .3s;z-index:9999;white-space:nowrap;box-shadow:0 4px 16px rgba(13,43,78,.3);pointer-events:none;}
+#toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+#toast.error{background:var(--err);}
+#toast.warn{background:var(--warn);}
+#toast.ok{background:var(--ok);}
 
-    /* ── Responsive ── */
-    @media (max-width: 420px) {
-      .card { padding: 24px 16px 20px; }
-      .device-grid { grid-template-columns: 1fr; }
-      .radio-group { flex-direction: column; }
-    }
-  </style>
+@media(max-width:480px){.dgrid{grid-template-columns:1fr;}.sgrid{grid-template-columns:repeat(3,1fr);}}
+</style>
 </head>
 <body>
 
-<header>
-  <div class="header-badge">作業指示書</div>
-  <h1>🔧 作業指示フォーム</h1>
-  <p>入力後「送信」ボタンを押すと、自動でメールが送信されます</p>
-</header>
-
-
-
-<div class="card">
-
-  <!-- 施設名 -->
-  <div class="section-label"><span class="dot"></span>施設情報</div>
-  <div class="facility-row">
-    <span class="facility-tag">施設名</span>
-    <span class="facility-name">株式会社A</span>
+<!-- AUTH -->
+<div id="authScreen">
+  <div class="auth-box">
+    <div class="auth-logo-bar">
+      <svg width="190" height="58" viewBox="0 0 190 58" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="28" cy="28" r="25" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+        <text x="28" y="36" font-size="27" text-anchor="middle" fill="white" font-family="'游明朝','Hiragino Mincho ProN',serif" font-weight="700">蟹</text>
+        <rect x="62" y="8" width="2.5" height="42" fill="rgba(255,255,255,0.2)" rx="1.5"/>
+        <text x="72" y="24" font-size="15" fill="#ffffff" font-family="'Noto Sans JP',sans-serif" font-weight="700" letter-spacing="1">カニエ電機</text>
+        <text x="72" y="38" font-size="9" fill="rgba(255,255,255,0.6)" font-family="Arial,Helvetica,sans-serif" font-weight="400" letter-spacing="2.5">KANIE ELECTRIC</text>
+        <text x="72" y="50" font-size="8" fill="rgba(255,255,255,0.4)" font-family="Arial,Helvetica,sans-serif" letter-spacing="1">CO., LTD.</text>
+      </svg>
+      <div class="sub">作業依頼システム / WORK ORDER SYSTEM</div>
+    </div>
+    <div class="auth-body">
+      <div class="auth-tabs">
+        <button class="auth-tab active" onclick="switchTab('client',this)">🏢 取引先</button>
+        <button class="auth-tab" onclick="switchTab('staff',this)">👷 スタッフ</button>
+      </div>
+      <div id="authErr" class="auth-err"></div>
+      <div class="fld"><label>ユーザーID</label><input type="text" id="lid" placeholder="例: kaisha-a" autocomplete="username"/></div>
+      <div class="fld"><label>パスワード</label><input type="password" id="lpw" placeholder="パスワードを入力" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+      <button class="btn-login" onclick="doLogin()">ログイン →</button>
+      <div class="auth-hint">お問合せ：カニエ電機 TEL 052-603-5275</div>
+    </div>
   </div>
+</div>
 
-  <!-- 指示内容 -->
-  <div class="form-group">
-    <label class="field-label">📋 指示内容 <span class="req">必須</span></label>
-    <div class="radio-group">
-      <div class="radio-btn">
-        <input type="radio" id="kosho" name="shiji" value="故障" />
-        <label for="kosho">⚠️ 故障</label>
+<!-- APP -->
+<div id="appShell">
+  <div class="topbar">
+    <div class="tb-brand">
+      <svg width="30" height="30" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="15" cy="15" r="14" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+        <text x="15" y="20" font-size="13" text-anchor="middle" fill="white" font-family="'游明朝','Hiragino Mincho ProN',serif" font-weight="700">蟹</text>
+      </svg>
+      <div>
+        <div class="tb-name">カニエ電機</div>
+        <div class="tb-sub">KANIE ELECTRIC</div>
       </div>
-      <div class="radio-btn">
-        <input type="radio" id="torikae" name="shiji" value="取替" />
-        <label for="torikae">🔄 取替</label>
-      </div>
+    </div>
+    <div class="tb-right">
+      <div class="user-pill"><span class="u-dot"></span><span id="upname" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;max-width:110px;"></span></div>
+      <button class="btn-out" onclick="doLogout()">ロクアウト</button>
     </div>
   </div>
 
-  <div class="divider"></div>
+  <div class="content">
 
-  <!-- 機器 -->
-  <div class="form-group">
-    <label class="field-label">🏭 機器 <span class="req">必須</span></label>
-    <div class="device-grid">
+    <!-- 依頼フォーム -->
+    <div class="page active" id="pageForm">
+      <div class="ph"><h2>作業依頼フォーム</h2><p>必要事項を入力して送信してください</p><div class="ph-line"></div></div>
+      <div class="card">
+        <div class="co-badge">
+          <div class="co-icon">🏢</div>
+          <div><div class="co-lbl">CLIENT</div><div class="co-name" id="facilityName">会社名</div></div>
+        </div>
 
-      <!-- エアコン -->
-      <div class="device-item">
-        <input type="checkbox" id="aircon" value="エアコン" onchange="toggleMachineNum(this,'aircon-num')" />
-        <label for="aircon">
-          <span class="icon">❄️</span> エアコン
-          <span class="check-mark">✓</span>
-        </label>
-        <div class="machine-num-wrap" id="aircon-num">
-          <div class="machine-num-inner">
-            <label for="aircon-no">番号</label>
-            <input type="text" id="aircon-no" placeholder="A3-1" />
-            <span>番号</span>
+        <div class="frow">
+          <div class="flbl">📋 指示内容 <span class="req">必須</span></div>
+          <div class="rpills">
+            <div class="rp"><input type="radio" id="r1" name="shiji" value="故障"/><label for="r1"><span class="ri">⚠️</span>故障</label></div>
+            <div class="rp"><input type="radio" id="r2" name="shiji" value="取替"/><label for="r2"><span class="ri">🔄</span>取替</label></div>
+            <div class="rp"><input type="radio" id="r3" name="shiji" value="点検"/><label for="r3"><span class="ri">🔍</span>点検</label></div>
           </div>
         </div>
-      </div>
 
-      <!-- 洗濯機 -->
-      <div class="device-item">
-        <input type="checkbox" id="sentaku" value="洗濯機" onchange="toggleMachineNum(this,'sentaku-num')" />
-        <label for="sentaku">
-          <span class="icon">🫧</span> 洗濯機
-          <span class="check-mark">✓</span>
-        </label>
-        <div class="machine-num-wrap" id="sentaku-num">
-          <div class="machine-num-inner">
-            <label for="aircon-no">番号</label>
-            <input type="text" id="aircon-no" placeholder="A3-1" />
-            <span>番号</span>
+        <div class="frow">
+          <div class="flbl">🏭 機器 <span class="req">必須</span></div>
+          <div class="dgrid">
+            <div class="di"><input type="checkbox" id="d1" value="エアコン" onchange="tn(this,'n1')"/><label for="d1"><span class="di-ico">❄️</span>エアコン<span class="chk">✓</span></label><div class="mnum" id="n1"><div class="mnum-in"><label>番号</label><input type="text" id="no1" placeholder="例: A3-1"/></div></div></div>
+            <div class="di"><input type="checkbox" id="d2" value="洗濯機" onchange="tn(this,'n2')"/><label for="d2"><span class="di-ico">🫧</span>洗濯機<span class="chk">✓</span></label><div class="mnum" id="n2"><div class="mnum-in"><label>番号</label><input type="text" id="no2" placeholder="例: B2-3"/></div></div></div>
+            <div class="di"><input type="checkbox" id="d3" value="乾燥機" onchange="tn(this,'n3')"/><label for="d3"><span class="di-ico">🌀</span>乾燥機<span class="chk">✓</span></label><div class="mnum" id="n3"><div class="mnum-in"><label>番号</label><input type="text" id="no3" placeholder="例: C1-2"/></div></div></div>
+            <div class="di"><input type="checkbox" id="d4" value="冷蔵庫" onchange="tn(this,'n4')"/><label for="d4"><span class="di-ico">🧊</span>冷蔵庫<span class="chk">✓</span></label><div class="mnum" id="n4"><div class="mnum-in"><label>番号</label><input type="text" id="no4" placeholder="例: D4-1"/></div></div></div>
+            <div class="di" style="grid-column:1/-1"><input type="checkbox" id="d5" value="その他" onchange="tn(this,'n5')"/><label for="d5"><span class="di-ico">📦</span>その他<span class="chk">✓</span></label><div class="mnum" id="n5"><div class="mnum-in"><label>内容</label><input type="text" id="no5" placeholder="機器・内容を入力してください"/></div></div></div>
           </div>
         </div>
-      </div>
 
-      <!-- 乾燥機 -->
-      <div class="device-item">
-        <input type="checkbox" id="kansou" value="乾燥機" onchange="toggleMachineNum(this,'kansou-num')" />
-        <label for="kansou">
-          <span class="icon">🌀</span> 乾燥機
-          <span class="check-mark">✓</span>
-        </label>
-        <div class="machine-num-wrap" id="kansou-num">
-          <div class="machine-num-inner">
-            <label for="aircon-no">番号</label>
-            <input type="text" id="aircon-no" placeholder="A3-1" />
-            <span>番号</span>
-          </div>
+        <div class="frow">
+          <div class="flbl">📝 備考 <span class="opt">任意</span></div>
+          <textarea id="fbiko" placeholder="補足事項・詳細があればご記入ください…"></textarea>
         </div>
-      </div>
 
-      <!-- 冷蔵庫 -->
-      <div class="device-item">
-        <input type="checkbox" id="reizou" value="冷蔵庫" onchange="toggleMachineNum(this,'reizou-num')" />
-        <label for="reizou">
-          <span class="icon">🧊</span> 冷蔵庫
-          <span class="check-mark">✓</span>
-        </label>
-        <div class="machine-num-wrap" id="reizou-num">
-          <div class="machine-num-inner">
-            <label for="aircon-no">番号</label>
-            <input type="text" id="aircon-no" placeholder="A3-1" />
-            <span>番号</span>
-          </div>
+        <div class="frow">
+          <div class="flbl">👤 担当者名 <span class="req">必須</span></div>
+          <input class="tinput" type="text" id="ftanto" placeholder="例：山田 太郎"/>
         </div>
-      </div>
 
-      <!-- その他 (full width) -->
-      <div class="device-item" style="grid-column: 1 / -1;">
-        <input type="checkbox" id="sonota" value="その他" />
-        <label for="sonota">
-          <span class="icon">📦</span> その他
-          <span class="check-mark">✓</span>
-        </label>
+        <button class="btn-send" id="sendBtn" onclick="sendForm()"><span>📨</span> 依頼を送信する</button>
       </div>
-      <div class="machine-num-wrap" id="reizou-num">
-          <div class="machine-num-inner">
-            <label for="aircon-no">その他</label>
-            <input type="text" id="aircon-no" placeholder="内容入力してください" />
-            <span>番号</span>
-          </div>
-        </div>
     </div>
+
+    <!-- 履歴 -->
+    <div class="page" id="pageHistory">
+      <div class="ph"><h2>依頼履歴</h2><p>過去の依頼内容と対応状況</p><div class="ph-line"></div></div>
+      <div id="histContent"></div>
+    </div>
+
+    <!-- スタッフ -->
+    <div class="page" id="pageStaff">
+      <div class="ph"><h2>依頼管理</h2><p>全取引先の依頼一覧と対応管理</p><div class="ph-line"></div></div>
+      <div class="sgrid">
+        <div class="sc"><div class="sn" id="sTotal">0</div><div class="sl">総依頼</div></div>
+        <div class="sc sw"><div class="sn" id="sPend">0</div><div class="sl">未対応</div></div>
+        <div class="sc sg"><div class="sn" id="sDone">0</div><div class="sl">完了</div></div>
+      </div>
+      <div class="fbar">
+        <select id="fk" onchange="renderStaff()"><option value="">すべての会社</option></select>
+        <select id="fs" onchange="renderStaff()">
+          <option value="">すべての状況</option>
+          <option value="未定">未定</option><option value="実施中">実施中</option><option value="完了">完了</option>
+        </select>
+        <button class="btn-xl" onclick="exportExcel()">📊 Excel</button>
+      </div>
+      <div id="staffContent"></div>
+    </div>
+
   </div>
-
-  <div class="divider"></div>
-
-  <!-- 備考 -->
-  <div class="form-group">
-    <label class="field-label" for="biko">📝 備考 <span class="opt">任意</span></label>
-    <textarea id="biko" placeholder="補足事項があればご記入ください…"></textarea>
-  </div>
-
-  <!-- 担当者 -->
-  <div class="form-group">
-    <label class="field-label" for="tanto">👤 担当者 <span class="req">必須</span></label>
-    <input type="text" id="tanto" placeholder="例：山田 太郎" />
-  </div>
-
-  <!-- Submit -->
-  <button class="btn-submit" id="sendBtn" onclick="sendForm()">
-    <span class="send-icon">📨</span> 送信する
-  </button>
-
+  <nav class="bnav" id="bnav"></nav>
 </div>
 
 <div id="toast"></div>
 
+<!-- 引退モーダル -->
+<div class="modal-overlay" id="taihiModal" style="display:none;">
+  <div class="modal-box">
+    <div class="modal-hd">
+      <h3>🔄 引退 — 担当者を変更する</h3>
+      <button class="modal-close" onclick="closeTaihiModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:12px;color:var(--txs);margin-bottom:14px;">急な用件のため、別の担当者に引き継ぎます。新しい担当者を選択してください。</p>
+      <div class="fld">
+        <label>新しい担当スタッフ</label>
+        <select id="taihiSelect"></select>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn-modal-cancel" onclick="closeTaihiModal()">キャンセル</button>
+      <button class="btn-modal-ok" onclick="confirmTaihi()">✓ 引き継ぐ</button>
+    </div>
+  </div>
+</div>
+
 <script>
-  // ─────────────────────────────────────────
-  //  ⚠️  ここに EmailJS の情報を入力してください
-  // ─────────────────────────────────────────
-  const EMAILJS_PUBLIC_KEY  = "_efCoOTySMW7-n5dK";   // EmailJS Public Key
-  const EMAILJS_SERVICE_ID  = "service_qo6afaf";   // Service ID
-  const EMAILJS_TEMPLATE_ID = "template_3wrvxdq";  // Template ID
-  // ─────────────────────────────────────────
+const EJ_KEY="_efCoOTySMW7-n5dK",EJ_SVC="service_qo6afaf",EJ_TPL="template_3wrvxdq",NOTIFY="damthanhtung1911@gmail.com";
+emailjs.init(EJ_KEY);
 
-  // Init EmailJS
-  emailjs.init(EMAILJS_PUBLIC_KEY);
+const USERS={
+  "kaisha-a":{pass:"passA123",type:"client",name:"会社A（株式会社A）",short:"会社A"},
+  "kaisha-b":{pass:"passB123",type:"client",name:"会社B（株式会社B）",short:"会社B"},
+  "kaisha-c":{pass:"passC123",type:"client",name:"会社C（株式会社C）",short:"会社C"},
+  "staff-01":{pass:"staff001",type:"staff",name:"山田 太郎（スタッフ）",short:"山田 太郎"},
+  "staff-02":{pass:"staff002",type:"staff",name:"鈴木 花子（スタッフ）",short:"鈴木 花子"},
+};
 
-  // Toggle machine number input
-  function toggleMachineNum(checkbox, wrapperId) {
-    const wrap = document.getElementById(wrapperId);
-    if (checkbox.checked) {
-      wrap.classList.add('show');
-    } else {
-      wrap.classList.remove('show');
-    }
+let cu=null,reqs=loadR();
+function loadR(){try{return JSON.parse(localStorage.getItem('ke_irai')||'[]');}catch(e){return[];}}
+function saveR(){localStorage.setItem('ke_irai',JSON.stringify(reqs));}
+
+let ltype="client";
+function switchTab(t,btn){ltype=t;document.querySelectorAll('.auth-tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+
+function doLogin(){
+  const id=document.getElementById('lid').value.trim(),pw=document.getElementById('lpw').value;
+  const err=document.getElementById('authErr');err.style.display='none';
+  const u=USERS[id];
+  if(!u||u.pass!==pw||u.type!==ltype){err.textContent='⚠️ IDまたはパスワードが正しくありません';err.style.display='block';return;}
+  cu={id,...u};
+  document.getElementById('authScreen').style.display='none';
+  const sh=document.getElementById('appShell');sh.style.display='flex';sh.style.flexDirection='column';
+  document.getElementById('upname').textContent=u.short;
+  buildNav();
+  if(u.type==='client'){document.getElementById('facilityName').textContent=u.name;showPage('pageForm');}
+  else{buildFilter();showPage('pageStaff');renderStaff();}
+}
+
+function doLogout(){cu=null;document.getElementById('appShell').style.display='none';document.getElementById('authScreen').style.display='flex';document.getElementById('lid').value='';document.getElementById('lpw').value='';}
+
+function buildNav(){
+  const nav=document.getElementById('bnav');
+  const pend=reqs.filter(r=>r.status==='未定').length;
+  if(cu.type==='client'){
+    nav.innerHTML=`<button class="nb active" id="bn1" onclick="sp('pageForm','bn1')"><div class="nb-ico">📋</div>依頼フォーム</button><button class="nb" id="bn2" onclick="sp('pageHistory','bn2');renderHistory()"><div class="nb-ico">📂</div>依頼履歴</button>`;
+  }else{
+    nav.innerHTML=`<button class="nb active" id="bn3" onclick="sp('pageStaff','bn3');renderStaff()"><div class="nb-ico">📊</div>依頼管理${pend>0?`<span class="nbadge">${pend}</span>`:''}</button>`;
   }
+}
 
-  // Show toast
-  function showToast(msg, isError = false) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.className = 'show' + (isError ? ' error' : '');
-    setTimeout(() => { t.className = ''; }, 4000);
-  }
+function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');}
+function sp(id,bid){showPage(id);document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));document.getElementById(bid)?.classList.add('active');}
 
-  // Build machine info string
-  function getMachineInfo() {
-    const devices = [
-      { id: 'aircon',  label: 'エアコン', numId: 'aircon-no'  },
-      { id: 'sentaku', label: '洗濯機',   numId: 'sentaku-no' },
-      { id: 'kansou',  label: '乾燥機',   numId: 'kansou-no'  },
-      { id: 'reizou',  label: '冷蔵庫',   numId: 'reizou-no'  },
-      { id: 'sonota',  label: 'その他',   numId: null         },
-    ];
-    const selected = [];
-    devices.forEach(d => {
-      const cb = document.getElementById(d.id);
-      if (cb && cb.checked) {
-        let text = d.label;
-        if (d.numId) {
-          const num = document.getElementById(d.numId).value;
-          if (num) text += `（${num}台）`;
-        }
-        selected.push(text);
-      }
-    });
-    return selected.join('、') || '（未選択）';
-  }
+function tn(cb,id){document.getElementById(id).classList.toggle('show',cb.checked);}
 
-  // Main send function
-  async function sendForm() {
-    // Validation
-    const shiji = document.querySelector('input[name="shiji"]:checked');
-    const tanto = document.getElementById('tanto').value.trim();
-    const devices = document.querySelectorAll('.device-item input[type="checkbox"]:checked');
+function getMI(){
+  const devs=[{i:'d1',l:'エアコン',n:'no1'},{i:'d2',l:'洗濯機',n:'no2'},{i:'d3',l:'乾燥機',n:'no3'},{i:'d4',l:'冷蔵庫',n:'no4'},{i:'d5',l:'その他',n:'no5'}];
+  return devs.filter(d=>document.getElementById(d.i)?.checked).map(d=>{const v=document.getElementById(d.n)?.value;return v?`${d.l}（${v}）`:d.l;}).join('、')||'（未選択）';
+}
 
-    if (!shiji)         { showToast('⚠️ 指示内容を選択してください', true); return; }
-    if (devices.length === 0) { showToast('⚠️ 機器を1つ以上選択してください', true); return; }
-    if (!tanto)         { showToast('⚠️ 担当者名を入力してください', true); return; }
+async function sendForm(){
+  const shiji=document.querySelector('input[name="shiji"]:checked');
+  const tanto=document.getElementById('ftanto').value.trim();
+  const devs=document.querySelectorAll('.di input[type="checkbox"]:checked');
+  if(!shiji){showToast('指示内容を選択してください','error');return;}
+  if(!devs.length){showToast('機器を1つ以上選択してください','error');return;}
+  if(!tanto){showToast('担当者名を入力してください','error');return;}
+  const now=new Date(),ds=`${now.getFullYear()}/${p2(now.getMonth()+1)}/${p2(now.getDate())} ${p2(now.getHours())}:${p2(now.getMinutes())}`;
+  const kiki=getMI(),biko=document.getElementById('fbiko').value.trim();
+  const rec={id:Date.now(),kaisha:cu.short,kaishaFull:cu.name,shiji:shiji.value,kiki,biko,tanto,date:ds,status:'未定',acceptedBy:''};
+  const btn=document.getElementById('sendBtn');btn.disabled=true;btn.innerHTML='<span>⏳</span> 送信中…';
+  try{
+    await emailjs.send(EJ_SVC,EJ_TPL,{shisetsumei:cu.name,shiji:shiji.value,kiki,biko:biko||'（なし）',tanto,date:ds,to_email:NOTIFY,from_email:"tung16208@gmail.com"});
+    reqs.push(rec);saveR();showToast('依頼を送信しました！','ok');resetForm();buildNav();
+  }catch(e){
+    console.error(e);reqs.push(rec);saveR();showToast('データを保存しました（メール送信エラー）','warn');resetForm();buildNav();
+  }finally{btn.disabled=false;btn.innerHTML='<span>📨</span> 依頼を送信する';}
+}
 
-    if (EMAILJS_PUBLIC_KEY === "YOUR_PUBLIC_KEY") {
-      showToast('⚙️ EmailJS の設定が必要です。HTMLファイル内のキーを設定してください', true);
-      return;
-    }
+function resetForm(){
+  document.querySelectorAll('input[name="shiji"]').forEach(r=>r.checked=false);
+  document.querySelectorAll('.di input[type="checkbox"]').forEach(c=>{c.checked=false;c.dispatchEvent(new Event('change'));});
+  document.querySelectorAll('.mnum-in input').forEach(i=>i.value='');
+  document.getElementById('fbiko').value='';document.getElementById('ftanto').value='';
+}
 
-    // Build params
-    const now = new Date();
-    const dateStr = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
+function renderHistory(){
+  const el=document.getElementById('histContent');
+  const mine=reqs.filter(r=>r.kaisha===cu.short).slice().reverse();
+  if(!mine.length){el.innerHTML=`<div class="empty"><div class="ei">📂</div><p>依頼履歴がありません</p></div>`;return;}
+  el.innerHTML=`<div class="hlist">${mine.map(r=>`<div class="hcard s-${sc(r.status)}"><div class="hc-top"><div><div class="hc-t">${r.shiji} ／ ${r.kiki}</div><div class="hc-r">👤 ${r.tanto}</div>${r.acceptedBy?`<div class="hc-s">🛠 担当: ${r.acceptedBy}</div>`:''}</div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px"><span class="hc-d">${r.date}</span>${bdg(r.status)}</div></div>${r.biko?`<div style="font-size:12px;color:var(--txs);border-top:1px solid var(--bdr);padding-top:8px;margin-top:4px">📝 ${r.biko}</div>`:''}</div>`).join('')}</div>`;
+}
 
-    const params = {
-      shisetsumei: "株式会社A",
-      shiji:       shiji.value,
-      kiki:        getMachineInfo(),
-      biko:        document.getElementById('biko').value.trim() || '（なし）',
-      tanto:       tanto,
-      date:        dateStr,
-      to_email:    "damthanhtung1911@gmail.com",
-      from_email:  "tung16208@gmail.com",
-    };
+function buildFilter(){
+  const sel=document.getElementById('fk');
+  const cos=[...new Set(reqs.map(r=>r.kaisha))];
+  sel.innerHTML='<option value="">すべての会社</option>'+cos.map(c=>`<option value="${c}">${c}</option>`).join('');
+}
 
-    // Disable button
-    const btn = document.getElementById('sendBtn');
-    btn.disabled = true;
-    btn.innerHTML = '<span>⏳</span> 送信中…';
+function renderStaff(){
+  const fk=document.getElementById('fk').value,fs=document.getElementById('fs').value;
+  let data=reqs.slice().reverse();
+  if(fk)data=data.filter(r=>r.kaisha===fk);
+  if(fs)data=data.filter(r=>r.status===fs);
+  document.getElementById('sTotal').textContent=reqs.length;
+  document.getElementById('sPend').textContent=reqs.filter(r=>r.status==='未定').length;
+  document.getElementById('sDone').textContent=reqs.filter(r=>r.status==='完了').length;
+  const el=document.getElementById('staffContent');
+  if(!data.length){el.innerHTML=`<div class="empty"><div class="ei">📋</div><p>該当する依頼がありません</p></div>`;return;}
+  el.innerHTML=`<div class="rlist">${data.map(r=>{
+    const isMyCase=r.acceptedBy===cu.short;
+    const cmts=(r.comments||[]);
+    return `<div class="rc s-${sc(r.status)}"><div class="rc-body">
+      <div class="rc-top"><span class="rc-co">${r.kaisha}</span><span class="rc-date">${r.date}</span></div>
+      <div class="rc-shiji">${r.shiji}</div>
+      <div class="rc-kiki">🏭 ${r.kiki}</div>
+      ${r.biko?`<div class="rc-biko">📝 ${r.biko}</div>`:''}
+      <div class="rc-ft">
+        <span class="rc-tanto">👤 ${r.tanto}</span>
+        ${r.acceptedBy?`<span class="rc-staff">🛠 ${r.acceptedBy}</span>`:''}
+        <select class="ssel ${ssc(r.status)}" onchange="chgSt(${r.id},this)">
+          <option value="未定" ${r.status==='未定'?'selected':''}>未定</option>
+          <option value="実施中" ${r.status==='実施中'?'selected':''}>実施中</option>
+          <option value="完了" ${r.status==='完了'?'selected':''}>完了</option>
+        </select>
+        <button class="btn-acc ${r.acceptedBy?'done':''}" onclick="accept(${r.id})" ${r.acceptedBy?'disabled':''}>${r.acceptedBy?'✓ 対応中':'引受'}</button>
+        ${isMyCase?`<button class="btn-taihi" onclick="openTaihiModal(${r.id})">🔄 引退</button>`:''}
+      </div>
+      <div class="cmt-area">
+        ${cmts.length?`<div class="cmt-list">${cmts.map(c=>`<div class="cmt-item"><div class="cmt-meta"><span>💬 ${c.author}</span><span>${c.date}</span></div><div class="cmt-text">${c.text}</div></div>`).join('')}</div>`:''}
+        <div class="cmt-form">
+          <textarea id="cmt-${r.id}" placeholder="コメントを入力…"></textarea>
+          <button class="btn-cmt" onclick="addComment(${r.id})">投稿</button>
+        </div>
+      </div>
+    </div></div>`;
+  }).join('')}</div>`;
+}
 
-    try {
-      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params);
-      showToast('✅ 送信完了！メールが送られました');
-      resetForm();
-    } catch (err) {
-      console.error(err);
-      showToast('❌ 送信に失敗しました。設定を確認してください', true);
-    } finally {
-      btn.disabled = false;
-      btn.innerHTML = '<span class="send-icon">📨</span> 送信する';
-    }
-  }
+function chgSt(id,sel){const r=reqs.find(r=>r.id===id);if(!r)return;r.status=sel.value;saveR();renderStaff();showToast(`「${sel.value}」に更新しました`,'ok');}
 
-  function resetForm() {
-    document.querySelectorAll('input[name="shiji"]').forEach(r => r.checked = false);
-    document.querySelectorAll('.device-item input[type="checkbox"]').forEach(c => {
-      c.checked = false;
-      c.dispatchEvent(new Event('change'));
-    });
-    document.querySelectorAll('.machine-num-inner input').forEach(i => i.value = '');
-    document.getElementById('biko').value = '';
-    document.getElementById('tanto').value = '';
-  }
+function accept(id){
+  const r=reqs.find(r=>r.id===id);if(!r||r.acceptedBy)return;
+  r.acceptedBy=cu.short;if(r.status==='未定')r.status='実施中';saveR();
+  emailjs.send(EJ_SVC,EJ_TPL,{shisetsumei:r.kaishaFull||r.kaisha,shiji:`【対応通知】${r.shiji}`,kiki:r.kiki,biko:`${cu.short} が引き受けました`,tanto:r.tanto,date:r.date,to_email:NOTIFY,from_email:"tung16208@gmail.com"}).catch(e=>console.error(e));
+  renderStaff();buildNav();showToast(`${r.kaisha} の案件を引き受けました`,'ok');
+}
+
+function exportExcel(){
+  if(!reqs.length){showToast('データがありません','warn');return;}
+  const H=['客先','指示内容','機器','備考','日付','担当者','担当スタッフ','状況'];
+  const ws=XLSX.utils.aoa_to_sheet([H,...reqs.map(r=>[r.kaisha,r.shiji,r.kiki,r.biko||'',r.date,r.tanto,r.acceptedBy||'',r.status])]);
+  ws['!cols']=[{wch:14},{wch:10},{wch:32},{wch:25},{wch:20},{wch:14},{wch:14},{wch:10}];
+  ws['!autofilter']={ref:ws['!ref']};
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'依頼一覧');
+  [...new Set(reqs.map(r=>r.kaisha))].forEach(k=>{
+    const ws2=XLSX.utils.aoa_to_sheet([H,...reqs.filter(r=>r.kaisha===k).map(r=>[r.kaisha,r.shiji,r.kiki,r.biko||'',r.date,r.tanto,r.acceptedBy||'',r.status])]);
+    ws2['!cols']=[{wch:14},{wch:10},{wch:32},{wch:25},{wch:20},{wch:14},{wch:14},{wch:10}];ws2['!autofilter']={ref:ws2['!ref']};
+    XLSX.utils.book_append_sheet(wb,ws2,k.substring(0,31));
+  });
+  const now=new Date();XLSX.writeFile(wb,`依頼管理_${now.getFullYear()}${p2(now.getMonth()+1)}${p2(now.getDate())}.xlsx`);
+  showToast('Excelをダウンロードしました','ok');
+}
+
+function p2(n){return String(n).padStart(2,'0');}
+function sc(s){return s==='未定'?'miteii':s==='実施中'?'jissyu':'kanryo';}
+function ssc(s){return s==='未定'?'sm':s==='実施中'?'sj':'sk';}
+function bdg(s){return `<span class="bdg b-${s==='未定'?'m':s==='実施中'?'j':'k'}">${s}</span>`;}
+function showToast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className='show'+(type?' '+type:'');setTimeout(()=>{t.className='';},3500);}
+
+/* ===== 引退モーダル ===== */
+let taihiTargetId=null;
+function openTaihiModal(id){
+  taihiTargetId=id;
+  const r=reqs.find(r=>r.id===id);if(!r)return;
+  const sel=document.getElementById('taihiSelect');
+  const staffList=Object.entries(USERS).filter(([k,v])=>v.type==='staff'&&v.short!==cu.short);
+  sel.innerHTML=staffList.map(([k,v])=>`<option value="${v.short}">${v.short}</option>`).join('');
+  document.getElementById('taihiModal').style.display='flex';
+}
+function closeTaihiModal(){document.getElementById('taihiModal').style.display='none';taihiTargetId=null;}
+function confirmTaihi(){
+  if(!taihiTargetId)return;
+  const r=reqs.find(r=>r.id===taihiTargetId);if(!r)return;
+  const newStaff=document.getElementById('taihiSelect').value;
+  const prev=r.acceptedBy;
+  r.acceptedBy=newStaff;
+  const now=new Date();
+  const ds=`${now.getFullYear()}/${p2(now.getMonth()+1)}/${p2(now.getDate())} ${p2(now.getHours())}:${p2(now.getMinutes())}`;
+  if(!r.comments)r.comments=[];
+  r.comments.push({author:cu.short,date:ds,text:`🔄 引退: ${prev} → ${newStaff} に引き継ぎました`});
+  saveR();closeTaihiModal();renderStaff();
+  showToast(`${newStaff} に引き継ぎました`,'ok');
+}
+
+/* ===== コメント ===== */
+function addComment(id){
+  const ta=document.getElementById(`cmt-${id}`);if(!ta)return;
+  const text=ta.value.trim();if(!text){showToast('コメントを入力してください','error');return;}
+  const r=reqs.find(r=>r.id===id);if(!r)return;
+  if(!r.comments)r.comments=[];
+  const now=new Date();
+  const ds=`${now.getFullYear()}/${p2(now.getMonth()+1)}/${p2(now.getDate())} ${p2(now.getHours())}:${p2(now.getMinutes())}`;
+  r.comments.push({author:cu.short,date:ds,text});
+  saveR();renderStaff();showToast('コメントを保存しました','ok');
+}
+
+if(!reqs.length){
+  [{id:1001,kaisha:'会社A',kaishaFull:'会社A（株式会社A）',shiji:'故障',kiki:'エアコン（A3-1）',biko:'異音がする',tanto:'山田 太郎',date:'2025/06/10 09:23',status:'完了',acceptedBy:'山田 太郎'},{id:1002,kaisha:'会社B',kaishaFull:'会社B（株式会社B）',shiji:'取替',kiki:'洗濯機（B2-3）',biko:'',tanto:'鈴木 花子',date:'2025/06/11 14:05',status:'実施中',acceptedBy:'山田 太郎'},{id:1003,kaisha:'会社A',kaishaFull:'会社A（株式会社A）',shiji:'点検',kiki:'乾燥機（A1-2）',biko:'定期点検依頼',tanto:'田中 次郎',date:'2025/06/12 10:30',status:'未定',acceptedBy:''},{id:1004,kaisha:'会社C',kaishaFull:'会社C（株式会社C）',shiji:'故障',kiki:'冷蔵庫（C3-2）',biko:'冷えない',tanto:'佐藤 三郎',date:'2025/06/13 08:45',status:'未定',acceptedBy:''}].forEach(d=>reqs.push(d));
+  saveR();
+}
 </script>
-
 </body>
 </html>
