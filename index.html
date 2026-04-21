@@ -1404,6 +1404,7 @@ let editTargetId=null,deleteTargetId=null,taihiTargetId=null;
  
 // ─ (2FA removed) ─────────────────────────────────────────
 function completeLogin(u){
+  saveSession(u);  // セッション保存
   cu=u;
   if(cu.type==='staff'){reqs=loadAllForStaff();}
   else{reqs=loadR();}
@@ -1414,7 +1415,26 @@ function completeLogin(u){
   buildNav();
   if(u.type==='client'){document.getElementById('facilityName').textContent=u.name;showPage('pageForm');}
   else{buildFilter();showPage('pageStaff');renderStaff();}
-  // セキュリティ: セッション保護 - ページ離脱時に自動ロック
+  setupAutoLock();
+}
+ 
+// リロード時のサイレントログイン（フォームはデフォルト状態でOK）
+function completeLoginSilent(u){
+  cu=u;
+  if(cu.type==='staff'){reqs=loadAllForStaff();}
+  else{reqs=loadR();}
+  document.getElementById('authScreen').style.display='none';
+  const sh=document.getElementById('pageShell');
+  sh.style.display='flex';
+  document.getElementById('upname').textContent=u.short;
+  buildNav();
+  if(u.type==='client'){
+    // フォームはリセット済み（HTMLのデフォルト状態）
+    if(document.getElementById('facilityName')) document.getElementById('facilityName').textContent=u.name;
+    showPage('pageForm');
+  } else {
+    buildFilter();showPage('pageStaff');renderStaff();
+  }
   setupAutoLock();
 }
 // 自動ロック（30分操作なしで自動ログアウト）
@@ -1441,14 +1461,43 @@ function applyDark(on){
 }
 function toggleDark(){applyDark(!darkMode);}
  
+/* ── SESSION PERSISTENCE ──────────────────────────────────── */
+// sessionStorage にログイン情報を保存（タブを閉じると消える）
+// ページリロード時は自動復元、ログアウトボタンのみ画面に戻る
+const SESSION_KEY = 'ke_session';
+ 
+function saveSession(u){
+  try{ sessionStorage.setItem(SESSION_KEY, JSON.stringify({id:u.id, type:u.type})); }catch(e){}
+}
+function clearSession(){
+  try{ sessionStorage.removeItem(SESSION_KEY); }catch(e){}
+}
+function loadSession(){
+  try{ return JSON.parse(sessionStorage.getItem(SESSION_KEY)||'null'); }catch(e){ return null; }
+}
+ 
 /* ── INIT ─────────────────────────────────────────────────── */
 window.addEventListener('load',()=>{
   try{const t=JSON.parse(localStorage.getItem('ke_theme')||'{}');darkMode=!!t.dark;applyDark(darkMode);}catch(e){}
-  loadSavedCreds('client');
+ 
+  // ローディング画面を非表示
   setTimeout(()=>{
     const ls=document.getElementById('loadingScreen');
     ls.classList.add('hide');
     setTimeout(()=>ls.style.display='none',500);
+ 
+    // セッション復元を試みる
+    const sess = loadSession();
+    if(sess){
+      const u = USERS[sess.id];
+      if(u && u.type === sess.type){
+        // セッション有効 → 自動ログイン（フォームはリセット済み）
+        completeLoginSilent({id:sess.id, ...u});
+        return;
+      }
+    }
+    // セッションなし → ログイン画面
+    loadSavedCreds('client');
     document.getElementById('authScreen').style.display='flex';
   },1300);
 });
@@ -1631,6 +1680,7 @@ async function doRegister(){
 /* ── LOGOUT ───────────────────────────────────────────────── */
 function doLogout(){
   clearTimeout(autoLockTimer);
+  clearSession();  // セッション削除（ログアウトボタンのみ）
   reqs=[];cu=null;
   document.getElementById('pageShell').style.display='none';
   document.getElementById('authScreen').style.display='flex';
@@ -2267,3 +2317,4 @@ function showToast(msg,type=''){
 <!-- ═══ TOAST ════════════════════════════════════════════════ -->
 </body>
 </html>
+ 
