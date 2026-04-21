@@ -13,7 +13,7 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d2b4e'/%3E%3Ctext x='50%25' y='56%25' dominant-baseline='middle' text-anchor='middle' font-size='38' font-family='serif' fill='white'%3E%E9%9B%BB%3C/text%3E%3C/svg%3E"/>
 <script>(function(){try{var t=JSON.parse(localStorage.getItem('ke_theme')||'{}');if(t.dark)document.documentElement.setAttribute('data-theme','dark');}catch(e){}}());</script>
 <style>
- 
+
 :root{
   --navy:#0d2b4e;--navy2:#1a3f6b;--navy3:#0a1f3a;
   --blue:#2563a8;--blue2:#3b82f6;
@@ -51,7 +51,7 @@ html,body{
 ::-webkit-scrollbar-thumb{background:var(--bdr2);border-radius:99px;}
 *{scrollbar-width:thin;scrollbar-color:var(--bdr2) transparent;}
 ::selection{background:rgba(37,99,168,.18);}
- 
+
 /* ─ ANIMATIONS ─────────────────────────────────────────── */
 @keyframes lf{from{width:0}to{width:100%}}
 @keyframes floatA{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
@@ -60,7 +60,7 @@ html,body{
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
 @keyframes bounceIn{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
 @keyframes stPulse{0%,100%{box-shadow:0 3px 10px rgba(232,93,47,.4)}50%{box-shadow:0 3px 18px rgba(232,93,47,.7)}}
- 
+
 /* ─ LOADING ─────────────────────────────────────────────── */
 #loadingScreen{
   position:fixed;inset:0;
@@ -75,7 +75,7 @@ html,body{
 .ls-sub{font-size:10px;letter-spacing:3px;opacity:.5;text-transform:uppercase;margin-bottom:16px;}
 .ls-bar{width:160px;height:3px;background:rgba(255,255,255,.15);border-radius:99px;margin:0 auto;overflow:hidden;}
 .ls-fill{height:100%;background:linear-gradient(90deg,var(--orange),var(--orange2));animation:lf 1.3s ease forwards;}
- 
+
 /* ═══════════════════════════════════════════════════════════
    FULL-PAGE SHELL — flex column, full page scroll
 ══════════════════════════════════════════════════════════ */
@@ -85,7 +85,7 @@ html,body{
   min-height:100vh;
   overflow-x:hidden;
 }
- 
+
 /* ─ TOP BAR ──────────────────────────────────────────────── */
 .topbar{
   flex-shrink:0;
@@ -133,7 +133,7 @@ html,body{
 }
 .btn-out:hover{color:#fff;border-color:rgba(255,255,255,.6);}
 .tb-tel{font-size:11px;color:rgba(255,255,255,.5);letter-spacing:.5px;white-space:nowrap;}
- 
+
 /* ─ MAIN AREA ─────────────────────────────────────────────── */
 .main-area{
   flex:1;
@@ -142,7 +142,7 @@ html,body{
   min-height:0;
   overflow:visible;
 }
- 
+
 /* ─ SIDEBAR ──────────────────────────────────────────────── */
 .sidebar{
   width:var(--sidebar-w);
@@ -204,7 +204,7 @@ html,body{
 }
 .sidebar-footer a{color:var(--txs);text-decoration:none;}
 .sidebar-footer a:hover{color:var(--blue);}
- 
+
 /* ─ CONTENT PANEL ─────────────────────────────────────────── */
 .content-panel{
   flex:1;
@@ -237,7 +237,7 @@ html,body{
     flex:1;
   }
 }
- 
+
 /* ─ PAGE HEADER ───────────────────────────────────────────── */
 .page{display:none;}
 .page.active{display:block;animation:fadeUp .22s ease forwards;}
@@ -246,7 +246,7 @@ html,body{
 [data-theme="dark"] .ph h2{color:var(--txt);}
 .ph p{font-size:12px;color:var(--txs);margin-top:3px;}
 .ph-line{height:3px;width:32px;background:linear-gradient(90deg,var(--orange),var(--orange2));border-radius:2px;margin-top:8px;}
- 
+
 /* ─ CARD ──────────────────────────────────────────────────── */
 .card{
   background:var(--sur);border-radius:var(--radl);
@@ -255,7 +255,7 @@ html,body{
   transition:background-color .3s,border-color .3s;
   max-width:780px;
 }
- 
+
 /* ─ FORM ─────────────────────────────────────────────────── */
 .co-badge{background:rgba(37,99,168,.06);border:1.5px solid rgba(37,99,168,.18);border-radius:var(--rad);padding:12px 14px;margin-bottom:18px;display:flex;align-items:center;gap:10px;}
 .co-icon{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,var(--navy),var(--blue));display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
@@ -302,7 +302,7 @@ textarea.fta:focus{border-color:var(--blue);background:var(--sur);box-shadow:0 0
 }
 .btn-send:hover{transform:translateY(-1px);}
 .btn-send:disabled{opacity:.55;cursor:not-allowed;transform:none;}
- 
+
 /* ─ SUBMIT SUCCESS ───────────────────────────────────────── */
 .submit-success{text-align:center;padding:44px 20px;animation:fadeUp .4s ease;}
 .ss-icon{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--ok),#10b981);display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 14px;box-shadow:0 8px 24px rgba(15,124,74,.3);animation:bounceIn .5s cubic-bezier(.34,1.56,.64,1);}
@@ -311,7 +311,7 @@ textarea.fta:focus{border-color:var(--blue);background:var(--sur);box-shadow:0 0
 .ss-sub{font-size:12.5px;color:var(--txs);}
 .btn-ghost{margin-top:18px;padding:11px 28px;background:var(--navy);color:#fff;border:none;border-radius:var(--rad);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;transition:.2s;}
 .btn-ghost:hover{background:var(--blue);}
- 
+
 /* ─ HISTORY ──────────────────────────────────────────────── */
 .hist-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:13px;}
 .hs-item{background:var(--sur);border:1px solid var(--bdr);border-radius:var(--rad);padding:11px 8px;text-align:center;}
@@ -346,7 +346,7 @@ textarea.fta:focus{border-color:var(--blue);background:var(--sur);box-shadow:0 0
 .btn-sm:hover{border-color:var(--blue);color:var(--navy);}
 .btn-sm.danger{border-color:#fca5a5;color:var(--err);background:var(--err-bg);}
 .btn-sm.danger:hover{background:#fef2f2;}
- 
+
 /* ─ STATUS TIMELINE ──────────────────────────────────────── */
 .status-timeline{display:flex;align-items:center;padding:14px 0 10px;}
 .st-step{display:flex;flex-direction:column;align-items:center;gap:3px;flex-shrink:0;}
@@ -370,7 +370,7 @@ textarea.fta:focus{border-color:var(--blue);background:var(--sur);box-shadow:0 0
 .ir-v{font-weight:600;color:var(--txb);text-align:right;}
 [data-theme="dark"] .ir-v{color:var(--txt);}
 .hc-biko{font-size:12px;color:var(--txb);background:var(--sur2);border-radius:6px;padding:8px 11px;margin-top:8px;border-left:3px solid var(--orange);line-height:1.5;}
- 
+
 /* ─ CHAT ─────────────────────────────────────────────────── */
 .chat-section{margin-top:11px;border-top:1px solid var(--bdr);padding-top:11px;}
 .chat-header{display:flex;align-items:center;gap:6px;margin-bottom:9px;}
@@ -391,7 +391,7 @@ textarea.fta:focus{border-color:var(--blue);background:var(--sur);box-shadow:0 0
 .btn-chat-send{padding:8px 16px;background:var(--navy);color:#fff;border:none;border-radius:var(--rads);font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:.2s;flex-shrink:0;align-self:flex-end;}
 .btn-chat-send:hover{background:var(--blue);}
 .no-chat{font-size:11.5px;color:var(--txl);text-align:center;padding:14px;font-style:italic;}
- 
+
 /* ─ MIC BUTTON ───────────────────────────────────────────── */
 .btn-mic{
   width:38px;height:38px;border-radius:50%;
@@ -435,11 +435,11 @@ textarea.fta:focus{border-color:var(--blue);background:var(--sur);box-shadow:0 0
 .btn-mic:hover .mic-tooltip{opacity:1;}
 .btn-mic.recording .mic-tooltip{opacity:1;background:var(--err);}
 .btn-mic.recording .mic-tooltip::after{border-top-color:var(--err);}
- 
+
 /* staff chat mic */
 .sc-form-wrap{display:flex;flex-direction:column;gap:4px;flex:1;}
 .sc-form-row{display:flex;gap:6px;align-items:flex-end;}
- 
+
 /* ─ STAFF DASHBOARD ─────────────────────────────────────── */
 .sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;max-width:780px;}
 .sc{background:var(--sur);border:1px solid var(--bdr);border-radius:var(--rad);padding:13px 10px;text-align:center;transition:transform .15s;}
@@ -492,7 +492,7 @@ textarea.fta:focus{border-color:var(--blue);background:var(--sur);box-shadow:0 0
 .eh-title{font-size:10.5px;font-weight:700;color:#b45309;margin-bottom:5px;display:flex;align-items:center;gap:4px;}
 .eh-item{font-size:11.5px;color:var(--txb);padding:4px 0;border-bottom:1px solid var(--bdr);line-height:1.55;}
 .eh-item:last-child{border-bottom:none;}
- 
+
 /* ─ STAFF CHAT ───────────────────────────────────────────── */
 .staff-chat{margin-top:10px;border-top:1px solid var(--bdr);padding-top:10px;}
 .sc-msgs{display:flex;flex-direction:column;gap:7px;margin-bottom:8px;max-height:190px;overflow-y:auto;padding-right:2px;}
@@ -508,7 +508,7 @@ textarea.fta:focus{border-color:var(--blue);background:var(--sur);box-shadow:0 0
 .sc-form textarea{flex:1;min-height:40px;font-size:12.5px;padding:8px 10px;resize:none;}
 .btn-sc-send{padding:8px 14px;background:var(--navy);color:#fff;border:none;border-radius:var(--rads);font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:.2s;align-self:flex-end;}
 .btn-sc-send:hover{background:var(--blue);}
- 
+
 /* ─ BADGES ───────────────────────────────────────────────── */
 .bdg{display:inline-flex;align-items:center;gap:3px;padding:3px 10px;border-radius:99px;font-size:11.5px;font-weight:700;}
 .bdg::before{content:'';width:4px;height:4px;border-radius:50%;background:currentColor;opacity:.7;}
@@ -518,7 +518,7 @@ textarea.fta:focus{border-color:var(--blue);background:var(--sur);box-shadow:0 0
 [data-theme="dark"] .b-m{background:rgba(245,158,11,.2);color:#fcd34d;}
 [data-theme="dark"] .b-j{background:rgba(59,130,246,.2);color:#93c5fd;}
 [data-theme="dark"] .b-k{background:rgba(16,185,129,.2);color:#6ee7b7;}
- 
+
 /* ─ MODAL ─────────────────────────────────────────────────── */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px);animation:fadeUp .2s ease;}
 .modal-box{background:var(--sur);border-radius:var(--radl);box-shadow:var(--shdl);width:min(460px,96vw);overflow:hidden;animation:slideUp .3s cubic-bezier(.22,.68,0,1.1);max-height:90vh;overflow-y:auto;}
@@ -538,7 +538,7 @@ textarea.fta:focus{border-color:var(--blue);background:var(--sur);box-shadow:0 0
 .btn-modal-ok.danger{background:linear-gradient(135deg,var(--err),#ef4444);}
 .btn-modal-cancel{flex:1;padding:12px;background:var(--sur2);color:var(--txb);border:1.5px solid var(--bdr);border-radius:var(--rads);font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:.2s;}
 .btn-modal-cancel:hover{border-color:var(--blue);}
- 
+
 /* ─ TOAST ─────────────────────────────────────────────────── */
 #toast{
   position:fixed;bottom:24px;left:50%;
@@ -553,12 +553,12 @@ textarea.fta:focus{border-color:var(--blue);background:var(--sur);box-shadow:0 0
 #toast.error{background:var(--err);}
 #toast.warn{background:var(--warn);}
 #toast.ok{background:var(--ok);}
- 
+
 /* ─ EMPTY STATE ──────────────────────────────────────────── */
 .empty{text-align:center;padding:48px 20px;}
 .empty .ei{font-size:42px;margin-bottom:11px;opacity:.28;}
 .empty p{color:var(--txs);font-size:13px;}
- 
+
 /* ─ AUTH SCREEN (full viewport) ─────────────────────────── */
 #authScreen{
   display:none;
@@ -575,7 +575,7 @@ textarea.fta:focus{border-color:var(--blue);background:var(--sur);box-shadow:0 0
   width:100%;height:100%;
   display:flex;
 }
- 
+
 /* LEFT PANEL */
 .auth-left{
   flex:1;min-width:0;
@@ -608,7 +608,7 @@ textarea.fta:focus{border-color:var(--blue);background:var(--sur);box-shadow:0 0
 .alp-footer-tel{font-size:20px;font-weight:800;font-family:'Sora',sans-serif;color:#fff;letter-spacing:1px;}
 .alp-footer-addr{font-size:11px;color:rgba(255,255,255,.45);margin-top:3px;}
 .alp-copyright{font-size:10px;color:rgba(255,255,255,.25);letter-spacing:.5px;}
- 
+
 /* RIGHT PANEL — scrollable login box */
 .auth-right{
   width:480px;flex-shrink:0;
@@ -659,7 +659,7 @@ textarea.fta:focus{border-color:var(--blue);background:var(--sur);box-shadow:0 0
 .auth-hint{font-size:10.5px;color:var(--txs);}
 .btn-link{font-size:11px;font-weight:700;color:var(--blue);background:none;border:none;cursor:pointer;font-family:inherit;text-decoration:underline;text-underline-offset:2px;}
 .btn-link:hover{color:var(--orange);}
- 
+
 /* Responsive: on small screens, auth shows only login box centered */
 @media(max-width:860px){
   .auth-left{display:none;}
@@ -670,7 +670,7 @@ textarea.fta:focus{border-color:var(--blue);background:var(--sur);box-shadow:0 0
     padding:20px;
   }
 }
- 
+
 /* ─ PRIVACY ───────────────────────────────────────────────── */
 #privacyScreen{display:none;height:100vh;overflow-y:auto;}
 .pp-header{background:linear-gradient(135deg,var(--navy3),var(--navy));padding:16px 20px;position:sticky;top:0;z-index:100;}
@@ -684,7 +684,7 @@ textarea.fta:focus{border-color:var(--blue);background:var(--sur);box-shadow:0 0
 .pp-section p,.pp-section li{font-size:12px;color:var(--txb);line-height:1.75;}
 .pp-section ul{padding-left:14px;}
 .pp-section li{margin-bottom:3px;}
- 
+
 /* ─ IMAGE UPLOAD ───────────────────────────────────────────── */
 .img-upload-area{
   border:2px dashed var(--bdr2);border-radius:var(--rad);
@@ -701,7 +701,7 @@ textarea.fta:focus{border-color:var(--blue);background:var(--sur);box-shadow:0 0
 .img-thumb img{width:100%;height:100%;object-fit:cover;}
 .img-thumb-del{position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;background:rgba(200,32,32,.85);color:#fff;border:none;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;line-height:1;}
 .img-count{font-size:11px;color:var(--txs);margin-top:5px;text-align:right;}
- 
+
 /* ─ ELDERLY FRIENDLY UI ───────────────────────────────────── */
 /* 高齢者向け：文字・ボタンを大きく、コントラスト強化 */
 body { font-size: 15px; }
@@ -733,7 +733,7 @@ textarea.fta { font-size: 15px !important; }
 :focus-visible { outline: 3px solid var(--orange) !important; outline-offset: 2px; }
 /* ヘルプテキスト */
 .help-text { font-size: 13px; color: var(--txs); margin-top: 5px; line-height: 1.5; }
- 
+
 /* ─ SECURITY BADGE ───────────────────────────────────────── */
 .sec-badge {
   display:flex;align-items:center;gap:10px;
@@ -743,28 +743,28 @@ textarea.fta { font-size: 15px !important; }
 .sec-badge-icon { font-size:22px; flex-shrink:0; }
 .sec-badge-text { font-size:12px; color:var(--ok); font-weight:700; line-height:1.5; }
 .sec-badge-sub { font-size:11px; color:var(--txs); font-weight:400; }
- 
- 
+
+
   .rpills{grid-template-columns:repeat(3,1fr);}
   .dgrid{grid-template-columns:1fr 1fr;}
   .sgrid{grid-template-columns:repeat(3,1fr);}
   .hist-stats{grid-template-columns:repeat(3,1fr);}
   .card{padding:14px;}
 }
- 
+
 /* ═══════════════════════════════════════════════════════════
    MOBILE BOTTOM NAVIGATION + RESPONSIVE OVERRIDES
 ══════════════════════════════════════════════════════════ */
- 
+
 /* ── BOTTOM NAV BAR ─────────────────────────────────────── */
 .mobile-bottom-nav {
   display: none;
 }
- 
+
 @media (max-width: 700px) {
   /* Hide sidebar on mobile */
   .sidebar { display: none !important; }
- 
+
   /* Bottom nav visible */
   .mobile-bottom-nav {
     display: flex;
@@ -829,7 +829,7 @@ textarea.fta { font-size: 15px !important; }
     display: flex; align-items: center; justify-content: center;
     padding: 0 4px;
   }
- 
+
   /* Content panel — full width, padded for topbar and bottom nav */
   .content-panel {
     padding: 14px 12px 80px !important;
@@ -837,7 +837,7 @@ textarea.fta { font-size: 15px !important; }
     min-height: calc(100vh - var(--topbar-h));
     overflow-y: auto;
   }
- 
+
   /* Topbar: compact on mobile */
   .topbar { padding: 0 10px; gap: 8px; }
   .tb-divider, .tb-caption, .tb-tel { display: none; }
@@ -847,16 +847,16 @@ textarea.fta { font-size: 15px !important; }
   .btn-out { font-size: 11px !important; padding: 5px 10px !important; }
   .user-pill { font-size: 11px !important; padding: 4px 8px !important; }
   .user-pill span:first-child { display: none; }
- 
+
   /* Page header */
   .ph h2 { font-size: 18px !important; }
   .ph p { font-size: 11px; }
- 
+
   /* Stats grid - horizontal scroll on very small screens */
   .hist-stats { grid-template-columns: repeat(3,1fr); gap: 6px; }
   .hs-n { font-size: 18px !important; }
   .hs-l { font-size: 9px; }
- 
+
   /* Filter buttons scroll */
   .hist-filter {
     flex-wrap: nowrap;
@@ -866,35 +866,35 @@ textarea.fta { font-size: 15px !important; }
     gap: 6px;
   }
   .hf-btn { flex-shrink: 0; }
- 
+
   /* Cards */
   .hcard-inner { padding: 0 10px 12px; }
   .hcard-header { padding: 11px 12px; }
   .hc-t { font-size: 13px !important; }
   .hcard-actions { gap: 6px; }
   .btn-sm { font-size: 11px !important; padding: 7px 12px !important; }
- 
+
   /* Status timeline — shrink for mobile */
   .status-timeline { padding: 10px 0 8px; }
   .st-node { width: 28px; height: 28px; font-size: 11px; }
   .st-label { font-size: 8.5px; }
- 
+
   /* Chat */
   .chat-messages { max-height: 160px; }
   .chat-bubble { font-size: 12px; padding: 7px 10px; }
   .chat-input { font-size: 13px !important; }
- 
+
   /* Form */
   .card { padding: 14px 12px; max-width: 100%; }
   .rpills { grid-template-columns: repeat(3,1fr); gap: 6px; }
   .rp label { padding: 12px 4px !important; font-size: 12px !important; }
   .rp label .ri { font-size: 18px; }
- 
+
   /* 機器グリッド → モバイルで2列、その他は全幅 */
   .dgrid { grid-template-columns: 1fr 1fr !important; gap: 8px; }
   /* その他 は全幅（inline style="grid-column:1/-1" を上書き） */
   .dgrid .di[style*="grid-column"] { grid-column: 1 / -1 !important; }
- 
+
   /* .di を縦積みコンテナに（label＋番号入力が1枚のカードに収まる） */
   .di {
     display: flex;
@@ -913,7 +913,7 @@ textarea.fta { font-size: 15px !important; }
     border-bottom-color: transparent !important;
   }
   .di-ico { font-size: 16px; }
- 
+
   /* 番号入力: labelに連結した見た目 */
   .mnum.show { max-height: 56px; margin-top: 0; }
   .mnum-in {
@@ -938,10 +938,10 @@ textarea.fta { font-size: 15px !important; }
     flex: 1;
     border-radius: 6px !important;
   }
- 
+
   .flbl { font-size: 13px !important; }
   .tinput, textarea.fta { font-size: 15px !important; }
- 
+
   /* Staff cards */
   .sgrid { grid-template-columns: repeat(3,1fr); gap: 6px; }
   .sn { font-size: 20px !important; }
@@ -951,13 +951,13 @@ textarea.fta { font-size: 15px !important; }
   .rc-top { flex-wrap: wrap; gap: 4px; }
   .rc-ft { flex-wrap: wrap; gap: 6px; }
   .ssel { font-size: 12px !important; min-width: 80px; }
- 
+
   /* Modal */
   .modal-box { width: 94vw; margin: 0 auto; }
- 
+
   /* Toast above bottom nav */
   #toast { bottom: 74px; }
- 
+
   /* Auth screen — centered form only */
   .auth-left { display: none; }
   .auth-right {
@@ -973,19 +973,19 @@ textarea.fta { font-size: 15px !important; }
   .auth-tabs-wrap { padding: 12px 14px 0; }
   .auth-tab { font-size: 12px !important; padding: 9px 4px !important; }
   .auth-body { padding: 0 14px 12px; }
- 
+
   /* Mic button — slightly larger tap area on mobile */
   .btn-mic { width: 42px !important; height: 42px !important; }
- 
+
   /* Scrollable filter bar for staff */
   .fbar {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
- 
+
   /* Excel button */
   .btn-xl { font-size: 13px !important; padding: 9px 14px !important; }
- 
+
   /* Image upload */
   .img-upload-area { padding: 14px 10px; }
   .img-upload-icon { font-size: 22px; }
@@ -993,7 +993,7 @@ textarea.fta { font-size: 15px !important; }
   .img-upload-sub { font-size: 10px; }
   .img-preview-grid { grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); }
 }
- 
+
 /* ── VERY SMALL PHONES (≤375px) ─────────────────────────── */
 @media (max-width: 375px) {
   .rpills { grid-template-columns: repeat(3,1fr); }
@@ -1009,7 +1009,7 @@ textarea.fta { font-size: 15px !important; }
 </style>
 </head>
 <body>
- 
+
 <!-- ═══ LOADING ══════════════════════════════════════════════ -->
 <div id="loadingScreen">
   <div class="ls-inner">
@@ -1019,7 +1019,7 @@ textarea.fta { font-size: 15px !important; }
     <div class="ls-bar"><div class="ls-fill"></div></div>
   </div>
 </div>
- 
+
 <!-- ═══ AUTH SCREEN ══════════════════════════════════════════ -->
 <div id="authScreen">
   <div class="auth-circuit"></div>
@@ -1074,7 +1074,7 @@ textarea.fta { font-size: 15px !important; }
         <div class="alp-copyright">© 2026 カニエ電機株式会社 All Rights Reserved.</div>
       </div>
     </div>
- 
+
     <!-- RIGHT: Login form -->
     <div class="auth-right">
       <div class="auth-box">
@@ -1155,10 +1155,10 @@ textarea.fta { font-size: 15px !important; }
     </div>
   </div>
 </div>
- 
+
 <!-- ═══ PAGE SHELL (post-login) ══════════════════════════════ -->
 <div id="pageShell">
- 
+
   <!-- TOP BAR -->
   <div class="topbar">
     <div class="tb-logo-icon">⚡</div>
@@ -1179,15 +1179,15 @@ textarea.fta { font-size: 15px !important; }
       <button class="btn-out" onclick="doLogout()">ログアウト</button>
     </div>
   </div>
- 
+
   <!-- MOBILE BOTTOM NAV (shown only on mobile, built by buildNav) -->
   <div class="mobile-bottom-nav" id="mobileBottomNav">
     <!-- Built by buildNav() -->
   </div>
- 
+
   <!-- MAIN AREA: sidebar + content -->
   <div class="main-area">
- 
+
     <!-- SIDEBAR -->
     <div class="sidebar" id="sidebarEl">
       <nav class="sidebar-nav" id="bnav">
@@ -1198,10 +1198,10 @@ textarea.fta { font-size: 15px !important; }
         <div style="margin-top:5px;">© 2026 カニエ電機株式会社</div>
       </div>
     </div>
- 
+
     <!-- CONTENT -->
     <div class="content-panel" id="mainContent">
- 
+
       <!-- FORM PAGE -->
       <div class="page active" id="pageForm">
         <div class="ph"><h2>作業依頼フォーム</h2><p>必要事項を入力して送信してください</p><div class="ph-line"></div></div>
@@ -1241,7 +1241,7 @@ textarea.fta { font-size: 15px !important; }
           <button class="btn-send" id="sendBtn" onclick="sendForm()"><span>📨</span> 依頼を送信する</button>
         </div>
       </div>
- 
+
       <!-- HISTORY PAGE -->
       <div class="page" id="pageHistory">
         <div class="ph"><h2>依頼履歴</h2><p>過去の依頼内容と対応状況</p><div class="ph-line"></div></div>
@@ -1250,7 +1250,7 @@ textarea.fta { font-size: 15px !important; }
         </div>
         <div id="histContent"></div>
       </div>
- 
+
       <!-- STAFF PAGE -->
       <div class="page" id="pageStaff">
         <div class="ph"><h2>依頼管理</h2><p>全取引先の依頼一覧と対応管理</p><div class="ph-line"></div></div>
@@ -1269,7 +1269,7 @@ textarea.fta { font-size: 15px !important; }
     </div>
   </div>
 </div>
- 
+
 <!-- ═══ PRIVACY ══════════════════════════════════════════════ -->
 <div id="privacyScreen">
   <div class="pp-header">
@@ -1286,9 +1286,9 @@ textarea.fta { font-size: 15px !important; }
     <div class="pp-section"><h3>お問い合わせ</h3><p>カニエ電機株式会社<br/>TEL: 052-603-5275<br/>Email: damthanhtung1911@gmail.com</p></div>
   </div>
 </div>
- 
+
 <div id="toast"></div>
- 
+
 <!-- ═══ MODAL: 引退 ════════════════════════════════════════════ -->
 <div class="modal-overlay" id="taihiModal" style="display:none;">
   <div class="modal-box">
@@ -1303,7 +1303,7 @@ textarea.fta { font-size: 15px !important; }
     </div>
   </div>
 </div>
- 
+
 <!-- ═══ MODAL: 依頼編集 ════════════════════════════════════════ -->
 <div class="modal-overlay" id="editModal" style="display:none;">
   <div class="modal-box">
@@ -1320,7 +1320,7 @@ textarea.fta { font-size: 15px !important; }
     </div>
   </div>
 </div>
- 
+
 <!-- ═══ MODAL: 削除確認 ════════════════════════════════════════ -->
 <div class="modal-overlay" id="deleteModal" style="display:none;">
   <div class="modal-box">
@@ -1335,13 +1335,13 @@ textarea.fta { font-size: 15px !important; }
     </div>
   </div>
 </div>
- 
+
 <!-- ═══ JAVASCRIPT ════════════════════════════════════════════ -->
 <script>
 /* ── CONFIG ───────────────────────────────────────────────── */
 const EJ_KEY="_efCoOTySMW7-n5dK",EJ_SVC="service_qo6afaf",EJ_TPL="template_3wrvxdq",NOTIFY="damthanhtung1911@gmail.com";
 emailjs.init(EJ_KEY);
- 
+
 /* ── STATE ────────────────────────────────────────────────── */
 // ⚠️ SECURITY: パスワードはハッシュ化して保存（本番環境ではサーバー側で検証）
 // PBKDF2/bcrypt相当のシンプルな実装（フロントエンドデモ用）
@@ -1349,7 +1349,7 @@ function simpleHash(str){
   let h=5381;for(let i=0;i<str.length;i++){h=((h<<5)+h)^str.charCodeAt(i);h>>>=0;}
   return h.toString(16).padStart(8,'0');
 }
- 
+
 const USERS={
   "sugatec":{hash:simpleHash("sugatec123"),type:"client",name:"スガテック（株式会社スガテック）",short:"スガテック",tenantId:"T001"},
   "kaisha-b":{hash:simpleHash("passB123"),type:"client",name:"会社B（株式会社B）",short:"会社B",tenantId:"T002"},
@@ -1357,7 +1357,7 @@ const USERS={
   "staff-01":{hash:simpleHash("staff001"),type:"staff",name:"山田 太郎（スタッフ）",short:"山田 太郎",tenantId:"STAFF"},
   "staff-02":{hash:simpleHash("staff002"),type:"staff",name:"鈴木 花子（スタッフ）",short:"鈴木 花子",tenantId:"STAFF"},
 };
- 
+
 // ─ TENANT ISOLATION: テナント分離ストレージ ─────────────────
 // 各会社のデータを専用キーで完全分離
 function getTenantKey(tenantId){ return `ke_irai_${tenantId}`; }
@@ -1398,10 +1398,10 @@ function loadAllForStaff(){
   });
   return all;
 }
- 
+
 let cu=null,reqs=[],histFilter='all',darkMode=false;
 let editTargetId=null,deleteTargetId=null,taihiTargetId=null;
- 
+
 // ─ (2FA removed) ─────────────────────────────────────────
 function completeLogin(u){
   saveSession(u);  // セッション保存
@@ -1417,7 +1417,7 @@ function completeLogin(u){
   else{buildFilter();showPage('pageStaff');renderStaff();}
   setupAutoLock();
 }
- 
+
 // リロード時のサイレントログイン（フォームはデフォルト状態でOK）
 function completeLoginSilent(u){
   cu=u;
@@ -1449,8 +1449,8 @@ function setupAutoLock(){
   ['click','keydown','mousemove','touchstart'].forEach(ev=>document.addEventListener(ev,resetAutoLock,{passive:true}));
   resetAutoLock();
 }
- 
- 
+
+
 /* ── DARK MODE ────────────────────────────────────────────── */
 function applyDark(on){
   if(on)document.documentElement.setAttribute('data-theme','dark');
@@ -1460,12 +1460,12 @@ function applyDark(on){
   try{localStorage.setItem('ke_theme',JSON.stringify({dark:on}));}catch(e){}
 }
 function toggleDark(){applyDark(!darkMode);}
- 
+
 /* ── SESSION PERSISTENCE ──────────────────────────────────── */
 // sessionStorage にログイン情報を保存（タブを閉じると消える）
 // ページリロード時は自動復元、ログアウトボタンのみ画面に戻る
 const SESSION_KEY = 'ke_session';
- 
+
 function saveSession(u){
   try{ sessionStorage.setItem(SESSION_KEY, JSON.stringify({id:u.id, type:u.type})); }catch(e){}
 }
@@ -1475,17 +1475,17 @@ function clearSession(){
 function loadSession(){
   try{ return JSON.parse(sessionStorage.getItem(SESSION_KEY)||'null'); }catch(e){ return null; }
 }
- 
+
 /* ── INIT ─────────────────────────────────────────────────── */
 window.addEventListener('load',()=>{
   try{const t=JSON.parse(localStorage.getItem('ke_theme')||'{}');darkMode=!!t.dark;applyDark(darkMode);}catch(e){}
- 
+
   // ローディング画面を非表示
   setTimeout(()=>{
     const ls=document.getElementById('loadingScreen');
     ls.classList.add('hide');
     setTimeout(()=>ls.style.display='none',500);
- 
+
     // セッション復元を試みる
     const sess = loadSession();
     if(sess){
@@ -1501,7 +1501,7 @@ window.addEventListener('load',()=>{
     document.getElementById('authScreen').style.display='flex';
   },1300);
 });
- 
+
 /* ── AUTH TABS ────────────────────────────────────────────── */
 let ltype="client";
 /* ── AUTOCOMPLETE SUGGEST ─────────────────────────────────── */
@@ -1590,7 +1590,7 @@ function clearAuthMsg(){
   const re=document.getElementById('regErr');if(re)re.style.display='none';
   const ro=document.getElementById('regOk');if(ro)ro.style.display='none';
 }
- 
+
 /* ── REMEMBER ME ──────────────────────────────────────────── */
 function onRememberChange(){
   const chk=document.getElementById('rememberMe');
@@ -1629,7 +1629,7 @@ function loadSavedCreds(type){
     }
   }catch(e){}
 }
- 
+
 /* ── LOGIN ────────────────────────────────────────────────── */
 function doLogin(){
   const id=document.getElementById('lid').value.trim(),pw=document.getElementById('lpw').value;
@@ -1647,7 +1647,7 @@ function doLogin(){
     completeLogin({id,...u});
   },360);
 }
- 
+
 /* ── REGISTER ─────────────────────────────────────────────── */
 async function doRegister(){
   const company=document.getElementById('regCompany').value.trim();
@@ -1676,7 +1676,7 @@ async function doRegister(){
   }
   btn.disabled=false;btn.innerHTML='<span>📨</span> 登録申請を送信';
 }
- 
+
 /* ── LOGOUT ───────────────────────────────────────────────── */
 function doLogout(){
   clearTimeout(autoLockTimer);
@@ -1687,7 +1687,7 @@ function doLogout(){
   loadSavedCreds(ltype);
   clearAuthMsg();
 }
- 
+
 /* ── NAV ──────────────────────────────────────────────────── */
 function buildNav(){
   const nav=document.getElementById('bnav');
@@ -1728,7 +1728,7 @@ function updateMbnDark(){
   const ic=document.getElementById('mbnDarkIcon');
   if(ic)ic.textContent=darkMode?'☀️':'🌙';
 }
- 
+
 function showPage(id){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
@@ -1745,12 +1745,12 @@ function sp(id,bid,mbid){
   if(mbid)document.getElementById(mbid)?.classList.add('active');
 }
 function tn(cb,id){document.getElementById(id).classList.toggle('show',cb.checked);}
- 
+
 /* ── FORM SUBMIT ──────────────────────────────────────────── */
- 
+
 /* ── IMAGE UPLOAD HELPERS ─────────────────────────────────── */
 let uploadedImages = [];
- 
+
 function handleDragOver(e){e.preventDefault();document.getElementById('uploadArea').classList.add('drag-over');}
 function handleDragLeave(e){document.getElementById('uploadArea').classList.remove('drag-over');}
 function handleDrop(e){
@@ -1778,7 +1778,7 @@ function renderImgPreviews(){
   if(uploadedImages.length){cnt.textContent=`${uploadedImages.length} / 5 枚`;cnt.style.display='block';}
   else{cnt.style.display='none';}
 }
- 
+
 /* ── IMAGE LIGHTBOX ───────────────────────────────────────── */
 let _imgModalImages=[];let _imgModalIdx=0;
 function openImgModal(reqId,idx){
@@ -1794,7 +1794,7 @@ function renderImgModal(){
   if(dots)dots.innerHTML=_imgModalImages.length>1?_imgModalImages.map((_,i)=>`<div onclick="event.stopPropagation();_imgModalIdx=${i};renderImgModal()" style="width:8px;height:8px;border-radius:50%;background:${i===_imgModalIdx?'#fff':'rgba(255,255,255,.35)'};cursor:pointer;transition:.2s"></div>`).join(''):'';
 }
 function closeImgModal(){document.getElementById('imgModal').style.display='none';}
- 
+
 function getMI(){
   const devs=[{i:'d1',l:'エアコン',n:'no1'},{i:'d2',l:'洗濯機',n:'no2'},{i:'d3',l:'乾燥機',n:'no3'},{i:'d4',l:'冷蔵庫',n:'no4'},{i:'d5',l:'その他',n:'no5'}];
   return devs.filter(d=>document.getElementById(d.i)?.checked).map(d=>{const v=document.getElementById(d.n)?.value;return v?`${d.l}（${v}）`:d.l;}).join('、')||'（未選択）';
@@ -1811,12 +1811,35 @@ async function sendForm(){
     await emailjs.send(EJ_SVC,EJ_TPL,{shisetsumei:cu.name,shiji:shiji.value,kiki,biko:biko||'（なし）',tanto,date:ds,to_email:NOTIFY,from_email:"tung16208@gmail.com"});
     reqs.push(rec);
     localStorage.setItem(getTenantKey(cu.tenantId),JSON.stringify(reqs.filter(r=>r.tenantId===cu.tenantId)));
-    showSubmitSuccess(false);buildNav();
-  }catch(e){console.error(e);reqs.push(rec);localStorage.setItem(getTenantKey(cu.tenantId),JSON.stringify(reqs.filter(r=>r.tenantId===cu.tenantId)));showSubmitSuccess(true);buildNav();}
+    showToast('✅ 依頼を送信しました！スタッフが確認次第、対応いたします。','ok');
+    buildNav();resetFormFields();
+  }catch(e){
+    console.error(e);
+    reqs.push(rec);
+    localStorage.setItem(getTenantKey(cu.tenantId),JSON.stringify(reqs.filter(r=>r.tenantId===cu.tenantId)));
+    showToast('⚠️ メール送信に失敗しましたが、データは保存されました。','warn');
+    buildNav();resetFormFields();
+  }
   finally{uploadedImages=[];btn.disabled=false;btn.innerHTML='<span>📨</span> 依頼を送信する';}
 }
 function showSubmitSuccess(warn){
   document.getElementById('formCard').innerHTML=`<div class="submit-success"><div class="ss-icon">${warn?'⚠️':'✅'}</div><div class="ss-title">${warn?'データを保存しました':'依頼を送信しました！'}</div><p class="ss-sub">${warn?'メール送信に失敗しましたが、データは保存されています。':'スタッフが確認次第、対応いたします。'}</p><button class="btn-ghost" onclick="restoreForm()">新しい依頼を作成</button></div>`;
+}
+function resetFormFields(){
+  document.querySelectorAll('input[name="shiji"]').forEach(r=>r.checked=false);
+  ['d1','d2','d3','d4','d5'].forEach(function(id,i){
+    var cb=document.getElementById(id);
+    if(cb){cb.checked=false;var num=document.getElementById('n'+(i+1));if(num)num.classList.remove('show');var ni=document.getElementById('no'+(i+1));if(ni)ni.value='';}
+  });
+  var fbiko=document.getElementById('fbiko');if(fbiko)fbiko.value='';
+  var ftanto=document.getElementById('ftanto');if(ftanto)ftanto.value='';
+  uploadedImages=[];
+  var grid=document.getElementById('imgPreviewGrid');if(grid)grid.innerHTML='';
+  var cnt=document.getElementById('imgCount');if(cnt){cnt.style.display='none';cnt.textContent='';}
+  var inp=document.getElementById('imgInput');if(inp)inp.value='';
+  var panel=document.querySelector('.content-panel');
+  if(panel)panel.scrollTo({top:0,behavior:'smooth'});
+  else window.scrollTo({top:0,behavior:'smooth'});
 }
 function restoreForm(){
   const fc=document.getElementById('formCard');
@@ -1835,7 +1858,7 @@ function restoreForm(){
     <button class="btn-send" id="sendBtn" onclick="sendForm()"><span>📨</span> 依頼を送信する</button>`;
   uploadedImages=[];
 }
- 
+
 /* ── HISTORY ──────────────────────────────────────────────── */
 function setHistFilter(f,btn){histFilter=f;document.querySelectorAll('.hf-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderHistory();}
 function renderHistory(){
@@ -1912,7 +1935,7 @@ function toggleHcard(id){
     },60);
   }
 }
- 
+
 /* ── CLIENT CHAT ──────────────────────────────────────────── */
 function sendChatClient(id){
   const ta=document.getElementById(`chatIn-${id}`);if(!ta)return;
@@ -1925,7 +1948,7 @@ function sendChatClient(id){
   showToast('📨 スタッフへメッセージを送信しました','ok');
   emailjs.send(EJ_SVC,EJ_TPL,{shisetsumei:r.kaishaFull||r.kaisha,shiji:`【メッセージ通知】${r.shiji}`,kiki:r.kiki,biko:text,tanto:cu.short,date:nowStr(),to_email:NOTIFY,from_email:"tung16208@gmail.com"}).catch(e=>console.error(e));
 }
- 
+
 /* ── EDIT MODAL (client) ──────────────────────────────────── */
 function openEditModal(id){
   editTargetId=id;const r=reqs.find(r=>r.id===id);if(!r)return;
@@ -1948,7 +1971,7 @@ function confirmEdit(){
   r.shiji=newShiji;r.kiki=newKiki;r.tanto=newTanto;r.biko=newBiko;
   clientSaveR();closeEditModal();renderHistory();showToast('依頼を更新しました','ok');
 }
- 
+
 /* ── DELETE MODAL (client) ────────────────────────────────── */
 function openDeleteModal(id){
   deleteTargetId=id;const r=reqs.find(r=>r.id===id);if(!r)return;
@@ -1961,7 +1984,7 @@ function confirmDelete(){
   reqs=reqs.filter(r=>r.id!==deleteTargetId);
   clientSaveR();closeDeleteModal();renderHistory();buildNav();showToast('依頼を削除しました','ok');
 }
- 
+
 /* ── CLIENT EXCEL ─────────────────────────────────────────── */
 function exportClientExcel(){
   const mine=reqs.filter(r=>r.kaisha===cu.short);
@@ -1982,7 +2005,7 @@ function exportClientExcel(){
   XLSX.writeFile(wb,`依頼履歴_${cu.short}_${now.getFullYear()}${p2(now.getMonth()+1)}${p2(now.getDate())}.xlsx`);
   showToast('Excelをダウンロードしました','ok');
 }
- 
+
 /* ── STAFF DASHBOARD ──────────────────────────────────────── */
 function buildFilter(){
   const sel=document.getElementById('fk');
@@ -2044,7 +2067,7 @@ function toggleRcard(id){
   const open=card.classList.toggle('open');
   if(open){setTimeout(()=>{const sm=document.getElementById(`scMsgs-${id}`);if(sm)sm.scrollTop=sm.scrollHeight;},60);}
 }
- 
+
 /* ── STAFF CHAT ───────────────────────────────────────────── */
 function sendChatStaff(id){
   const ta=document.getElementById(`scIn-${id}`);if(!ta)return;
@@ -2059,7 +2082,7 @@ function sendChatStaff(id){
   showToast(`📨 客先「${r.kaisha}」へメッセージを送信しました`,'ok');
   emailjs.send(EJ_SVC,EJ_TPL,{shisetsumei:r.kaishaFull||r.kaisha,shiji:`【対応通知】${r.shiji}`,kiki:r.kiki,biko:`${cu.short} が引き受けました`,tanto:r.tanto,date:r.date,to_email:NOTIFY,from_email:"tung16208@gmail.com"}).catch(e=>console.error(e));
 }
- 
+
 /* ── STAFF ACTIONS ────────────────────────────────────────── */
 function staffSaveR(){
   // スタッフが変更したデータを各テナントキーに分けて保存
@@ -2087,7 +2110,7 @@ function accept(id){
   emailjs.send(EJ_SVC,EJ_TPL,{shisetsumei:r.kaishaFull||r.kaisha,shiji:`【対応通知】${r.shiji}`,kiki:r.kiki,biko:`${cu.short} が引き受けました`,tanto:r.tanto,date:r.date,to_email:NOTIFY,from_email:"tung16208@gmail.com"}).catch(e=>console.error(e));
   renderStaff();buildNav();showToast(`${r.kaisha} の案件を引き受けました`,'ok');
 }
- 
+
 /* ── STAFF EXCEL ──────────────────────────────────────────── */
 function exportExcel(){
   if(!reqs.length){showToast('データがありません','warn');return;}
@@ -2104,7 +2127,7 @@ function exportExcel(){
   XLSX.writeFile(wb,`依頼管理_${now.getFullYear()}${p2(now.getMonth()+1)}${p2(now.getDate())}.xlsx`);
   showToast('Excelをダウンロードしました','ok');
 }
- 
+
 /* ── TAIHI MODAL ──────────────────────────────────────────── */
 function openTaihiModal(id){
   taihiTargetId=id;
@@ -2120,7 +2143,7 @@ function confirmTaihi(){
   r.comments.push({id:Date.now(),author:cu.short,date:nowStr(),text:`🔄 引退: ${prev} → ${newStaff} に引き継ぎました`,fromClient:false});
   staffSaveR();closeTaihiModal();renderStaff();showToast(`${newStaff} に引き継ぎました`,'ok');
 }
- 
+
 /* ── PRIVACY ──────────────────────────────────────────────── */
 function showPrivacy(){
   document.getElementById('authScreen').style.display='none';
@@ -2132,7 +2155,7 @@ function hidePrivacy(){
   if(cu){document.getElementById('pageShell').style.display='flex';}
   else{document.getElementById('authScreen').style.display='flex';}
 }
- 
+
 /* ── HELPERS ──────────────────────────────────────────────── */
 function p2(n){return String(n).padStart(2,'0');}
 function nowStr(){const now=new Date();return `${now.getFullYear()}/${p2(now.getMonth()+1)}/${p2(now.getDate())} ${p2(now.getHours())}:${p2(now.getMinutes())}`;}
@@ -2144,7 +2167,7 @@ function showToast(msg,type=''){
   const t=document.getElementById('toast');t.textContent=msg;t.className='show'+(type?' '+type:'');
   clearTimeout(t._timer);t._timer=setTimeout(()=>t.className='',3500);
 }
- 
+
 /* ── VOICE RECOGNITION (音声入力) ──────────────────────────── */
 (function(){
   // Web Speech API サポートチェック
@@ -2155,12 +2178,12 @@ function showToast(msg,type=''){
     };
     return;
   }
- 
+
   let currentRecognition = null;
   let currentBtnId = null;
   let currentInputId = null;
   let isRecording = false;
- 
+
   function stopCurrentRecognition(){
     if(currentRecognition){
       try{ currentRecognition.stop(); }catch(e){}
@@ -2179,11 +2202,11 @@ function showToast(msg,type=''){
     currentBtnId = null;
     currentInputId = null;
   }
- 
+
   window.toggleMic = function(mode, id){
     const btnId = `micBtn-${mode}-${id}`;
     const inputId = mode === 'client' ? `chatIn-${id}` : `scIn-${id}`;
- 
+
     // 別の録音中なら先に止める
     if(isRecording){
       if(currentBtnId === btnId){
@@ -2194,17 +2217,17 @@ function showToast(msg,type=''){
         stopCurrentRecognition();
       }
     }
- 
+
     const btn = document.getElementById(btnId);
     const input = document.getElementById(inputId);
     if(!btn || !input) return;
- 
+
     const recognition = new SpeechRecognition();
     recognition.lang = 'ja-JP';
     recognition.continuous = false;
     recognition.interimResults = true;
     recognition.maxAlternatives = 1;
- 
+
     // 録音開始 UI
     btn.classList.add('recording');
     btn.querySelector('.mic-icon').textContent = '⏹';
@@ -2214,9 +2237,9 @@ function showToast(msg,type=''){
     currentBtnId = btnId;
     currentInputId = inputId;
     currentRecognition = recognition;
- 
+
     let interimText = '';
- 
+
     recognition.onresult = function(e){
       let interim = '';
       let final = '';
@@ -2241,11 +2264,11 @@ function showToast(msg,type=''){
         input.style.height = Math.min(input.scrollHeight, 110) + 'px';
       }
     };
- 
+
     recognition.onspeechend = function(){
       recognition.stop();
     };
- 
+
     recognition.onend = function(){
       // processingに切り替えてから即クリア
       if(btn){
@@ -2271,7 +2294,7 @@ function showToast(msg,type=''){
         }
       }, 600);
     };
- 
+
     recognition.onerror = function(e){
       let msg = '音声入力エラーが発生しました';
       if(e.error === 'not-allowed') msg = 'マイクの使用が拒否されました。ブラウザの設定を確認してください。';
@@ -2280,7 +2303,7 @@ function showToast(msg,type=''){
       showToast(msg, 'error');
       stopCurrentRecognition();
     };
- 
+
     try{
       recognition.start();
     }catch(e){
@@ -2289,7 +2312,64 @@ function showToast(msg,type=''){
     }
   };
 })();
- 
+
+/* ── AUTO-REFRESH (スタッフ向け自動更新) ──────────────────── */
+(function(){
+  // 最後に確認したデータのスナップショット（JSON文字列）
+  var lastSnapshot = '';
+
+  function getSnapshot(){
+    // 全テナントキーのデータを結合してスナップショット生成
+    try{
+      var keys=Object.keys(localStorage).filter(function(k){return k.startsWith('ke_reqs_');});
+      return keys.sort().map(function(k){return localStorage.getItem(k)||'';}).join('|');
+    }catch(e){return '';}
+  }
+
+  function checkAndRefresh(){
+    // スタッフログイン中のみ動作
+    if(!cu||cu.type!=='staff')return;
+    var snap=getSnapshot();
+    if(snap!==lastSnapshot){
+      if(lastSnapshot!==''){
+        // データが変わった → 再読み込み
+        var currentPage=document.querySelector('.page.active');
+        // reqs配列を再構築
+        var allReqs=[];
+        try{
+          var keys=Object.keys(localStorage).filter(function(k){return k.startsWith('ke_reqs_');});
+          keys.forEach(function(k){
+            var d=JSON.parse(localStorage.getItem(k)||'[]');
+            allReqs=allReqs.concat(d);
+          });
+          reqs=allReqs;
+        }catch(ex){}
+        // スタッフダッシュボード表示中なら再レンダリング
+        if(currentPage&&currentPage.id==='pgStaff'){
+          buildFilter();renderStaff();buildNav();
+          showToast('🔔 新しい依頼が届きました','ok');
+        } else {
+          buildNav();
+        }
+      }
+      lastSnapshot=snap;
+    }
+  }
+
+  // ページ読み込み後にスナップショット初期化 & 5秒ごとにポーリング
+  window.addEventListener('load',function(){
+    setTimeout(function(){lastSnapshot=getSnapshot();},2000);
+    setInterval(checkAndRefresh,5000);
+  });
+
+  // 同一ブラウザの別タブからの変更もリアルタイム検知
+  window.addEventListener('storage',function(e){
+    if(e.key&&e.key.startsWith('ke_reqs_')){
+      checkAndRefresh();
+    }
+  });
+})();
+
 /* ── DEMO DATA ────────────────────────────────────────────── */
 // デモデータを各テナントキーに初期化（既存データがない場合のみ）
 (function initDemoData(){
@@ -2306,15 +2386,14 @@ function showToast(msg,type=''){
   });
 })();
 </script>
- 
+
 <!-- ═══ MODAL: 画像ライトボックス ═══════════════════════════ -->
 <div id="imgModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9000;align-items:center;justify-content:center;flex-direction:column;gap:12px;" onclick="closeImgModal()">
   <button style="position:absolute;top:14px;right:16px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;font-size:20px;width:36px;height:36px;border-radius:50%;cursor:pointer;" onclick="closeImgModal()">✕</button>
   <img id="imgModalImg" src="" style="max-width:92vw;max-height:80vh;border-radius:10px;object-fit:contain;box-shadow:0 8px 40px rgba(0,0,0,.6);" onclick="event.stopPropagation()"/>
   <div style="display:flex;gap:8px;" id="imgModalDots"></div>
 </div>
- 
+
 <!-- ═══ TOAST ════════════════════════════════════════════════ -->
 </body>
 </html>
- 
