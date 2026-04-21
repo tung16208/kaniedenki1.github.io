@@ -11,39 +11,40 @@
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d2b4e'/%3E%3Ctext x='50%25' y='56%25' dominant-baseline='middle' text-anchor='middle' font-size='38' font-family='serif' fill='white'%3E%E9%9B%BB%3C/text%3E%3C/svg%3E"/>
-<script>// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.x.x/firebase-firestore.js";
+<script type="module">
+// ── Firebase SDK (ES Module via CDN) ────────────────────────
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getFirestore, doc, setDoc, getDoc, collection,
+  onSnapshot, writeBatch, serverTimestamp, query, where
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-async function saveToFirebase(tenantId, newData) {
-    try {
-        await setDoc(doc(db, "orders", tenantId), {
-            content: newData,
-            updatedAt: new Date() // Lưu thêm thời gian để dễ quản lý
-        });
-        alert("成功!");
-    } catch (e) {
-        console.error("エラー: ", e);
-    }
-}
 const firebaseConfig = {
   apiKey: "AIzaSyBY1hisEWTccBZxEDP7cBl8_CnJrCaJ2hM",
   authDomain: "kanie-b23cb.firebaseapp.com",
   projectId: "kanie-b23cb",
   storageBucket: "kanie-b23cb.firebasestorage.app",
   messagingSenderId: "1073759973109",
-  appId: "1:1073759973109:web:c459eec083aa3f3fc65fbc",
-  measurementId: "G-FLKN6SNCDC"
+  appId: "1:1073759973109:web:c459eec083aa3f3fc65fbc"
 };
 
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);</script>
-<script>(function(){try{var t=JSON.parseke_theme(localStorage.getItem('')||'{}');if(t.dark)document.documentElement.setAttribute('data-theme','dark');}catch(e){}}());</script>
+const _app = initializeApp(firebaseConfig);
+const _db  = getFirestore(_app);
+
+// ── Expose Firestore helpers to global scope ─────────────────
+window._db = _db;
+window._fs = {
+  doc, setDoc, getDoc, collection,
+  onSnapshot, writeBatch, serverTimestamp, query, where
+};
+
+// Signal that Firebase is ready
+window._fbReady = true;
+document.dispatchEvent(new Event('fb-ready'));
+</script>
+<script>(function(){try{var t=JSON.parse(localStorage.getItem('ke_theme')||'{}');if(t.dark)document.documentElement.setAttribute('data-theme','dark');}catch(e){}}());</script>
 <style>
-async function saveData(tenantId, data) {
-    await setDoc(doc(db, "orders", tenantId), { content: data });
-}
+
 :root{
   --navy:#0d2b4e;--navy2:#1a3f6b;--navy3:#0a1f3a;
   --blue:#2563a8;--blue2:#3b82f6;
@@ -90,6 +91,9 @@ html,body{
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
 @keyframes bounceIn{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
 @keyframes stPulse{0%,100%{box-shadow:0 3px 10px rgba(232,93,47,.4)}50%{box-shadow:0 3px 18px rgba(232,93,47,.7)}}
+@keyframes syncPulse{0%,100%{opacity:1}50%{opacity:.4}}
+#syncDot.syncing{background:#fbbf24;animation:syncPulse .8s ease infinite;}
+#syncDot.error{background:#f87171;}
 
 /* ─ LOADING ─────────────────────────────────────────────── */
 #loadingScreen{
@@ -1201,6 +1205,10 @@ textarea.fta { font-size: 15px !important; }
     </div>
     <div class="tb-divider"></div>
     <div class="tb-caption">作業依頼システム</div>
+    <div id="syncBadge" style="display:none;align-items:center;gap:5px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:99px;padding:3px 10px;font-size:11px;color:rgba(255,255,255,.7);">
+      <span id="syncDot" style="width:6px;height:6px;border-radius:50%;background:#6ee7b7;flex-shrink:0;"></span>
+      <span id="syncTxt">同期済み</span>
+    </div>
     <div class="tb-spacer"></div>
     <div class="tb-right">
       <span class="tb-tel">TEL 052-603-5275</span>
@@ -1391,82 +1399,135 @@ const USERS={
 
 // ─ TENANT ISOLATION: テナント分離ストレージ ─────────────────
 // 各会社のデータを専用キーで完全分離
-function getTenantKey(tenantId){ return `ke_irai_${tenantId}`; }
-function loadR(){
-  if(!cu)return[];
-  try{
-    const raw=localStorage.getItem(getTenantKey(cu.tenantId))||'[]';
-    const all=JSON.parse(raw);
-    // STAFF can see all, clients only their own tenantId
-    if(cu.type==='staff')return all;
-    return all.filter(r=>r.tenantId===cu.tenantId);
-  }catch(e){return[];}
+// ─ FIRESTORE SYNC ─────────────────────────────────────────
+function getTenantKey(t){ return `ke_irai_${t}`; } // legacy compat only
+
+let _unsubListeners = [];
+
+function _waitFb(cb){
+  if(window._fbReady){ cb(); }
+  else { document.addEventListener('fb-ready', cb, {once:true}); }
 }
-function saveR(){
-  if(!cu)return;
-  const key=getTenantKey(cu.tenantId);
-  try{
-    if(cu.type==='staff'){
-      // Staff saves under a shared staff key that merges all tenants
-      localStorage.setItem(key,JSON.stringify(reqs));
-    } else {
-      // Client only saves their tenant data
-      const existing=JSON.parse(localStorage.getItem(key)||'[]');
-      // Keep only non-current-tenant (shouldn't exist, but safety)
-      const mine=reqs.filter(r=>r.tenantId===cu.tenantId);
-      localStorage.setItem(key,JSON.stringify(mine));
-    }
-  }catch(e){}
-}
-// Staff sees all tenants by merging all tenant stores
-function loadAllForStaff(){
-  let all=[];
-  Object.values(USERS).filter(u=>u.type==='client').forEach(u=>{
-    try{
-      const raw=localStorage.getItem(getTenantKey(u.tenantId))||'[]';
-      all=all.concat(JSON.parse(raw));
-    }catch(e){}
+
+function loadTenantReqs(tenantId){
+  return new Promise(resolve => {
+    _waitFb(async () => {
+      try{
+        const colRef = window._fs.collection(window._db, `tenants/${tenantId}/reqs`);
+        const unsub = window._fs.onSnapshot(colRef, snap => {
+          unsub();
+          resolve(snap.docs.map(d => d.data()));
+        }, e => { console.error('loadTenantReqs', e); resolve([]); });
+      }catch(e){ console.error(e); resolve([]); }
+    });
   });
-  return all;
 }
+
+function saveReqToFirestore(req){
+  if(!req || !req.tenantId || !req.id) return;
+  _waitFb(async () => {
+    setSyncStatus('syncing');
+    try{
+      const docRef = window._fs.doc(window._db, `tenants/${req.tenantId}/reqs`, String(req.id));
+      await window._fs.setDoc(docRef, req);
+      setSyncStatus('ok');
+    }catch(e){
+      console.error('saveReqToFirestore', e);
+      setSyncStatus('error');
+      showToast('⚠️ 同期エラーが発生しました', 'error');
+    }
+  });
+}
+
+function deleteReqFromFirestore(tenantId, reqId){
+  _waitFb(async () => {
+    try{
+      const {deleteDoc} = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
+      const docRef = window._fs.doc(window._db, `tenants/${tenantId}/reqs`, String(reqId));
+      await deleteDoc(docRef);
+    }catch(e){ console.error('deleteReqFromFirestore', e); }
+  });
+}
+
+function _onTenantUpdate(tenantId, data){
+  if(!cu) return;
+  reqs = reqs.filter(r => r.tenantId !== tenantId).concat(data);
+  if(cu.type === 'staff'){ buildFilter(); renderStaff(); buildNav(); }
+  else if(tenantId === cu.tenantId){ renderHistory(); buildNav(); }
+}
+
+function subscribeTenant(tenantId){
+  _waitFb(() => {
+    const colRef = window._fs.collection(window._db, `tenants/${tenantId}/reqs`);
+    const unsub = window._fs.onSnapshot(colRef, snap => {
+      _onTenantUpdate(tenantId, snap.docs.map(d => d.data()));
+    }, e => console.error('onSnapshot', e));
+    _unsubListeners.push(unsub);
+  });
+}
+
+function unsubAll(){ _unsubListeners.forEach(u => u()); _unsubListeners = []; }
+
+async function initReqs(){
+  if(!cu) return;
+  reqs = [];
+  setSyncStatus('syncing');
+  if(cu.type === 'staff'){
+    const clientTenants = [...new Set(Object.values(USERS).filter(u=>u.type==='client').map(u=>u.tenantId))];
+    for(const tid of clientTenants){
+      const data = await loadTenantReqs(tid);
+      reqs = reqs.concat(data);
+      subscribeTenant(tid);
+    }
+  } else {
+    const data = await loadTenantReqs(cu.tenantId);
+    reqs = data;
+    subscribeTenant(cu.tenantId);
+  }
+  setSyncStatus('ok');
+}
+
+function staffSaveR(changedReq){ if(changedReq){ saveReqToFirestore(changedReq); } }
+function clientSaveR(changedReq){ if(changedReq){ saveReqToFirestore(changedReq); } }
 
 let cu=null,reqs=[],histFilter='all',darkMode=false;
 let editTargetId=null,deleteTargetId=null,taihiTargetId=null;
 
 // ─ (2FA removed) ─────────────────────────────────────────
-function completeLogin(u){
-  saveSession(u);  // セッション保存
+async function completeLogin(u){
+  saveSession(u);
   cu=u;
-  if(cu.type==='staff'){reqs=loadAllForStaff();}
-  else{reqs=loadR();}
   document.getElementById('authScreen').style.display='none';
   const sh=document.getElementById('pageShell');
   sh.style.display='flex';
   document.getElementById('upname').textContent=u.short;
   buildNav();
   if(u.type==='client'){document.getElementById('facilityName').textContent=u.name;showPage('pageForm');}
-  else{buildFilter();showPage('pageStaff');renderStaff();}
+  else{buildFilter();showPage('pageStaff');}
   setupAutoLock();
+  await initReqs();
+  if(u.type==='staff'){buildFilter();renderStaff();buildNav();}
+  else{renderHistory();buildNav();}
 }
 
-// リロード時のサイレントログイン（フォームはデフォルト状態でOK）
-function completeLoginSilent(u){
+// リロード時のサイレントログイン
+async function completeLoginSilent(u){
   cu=u;
-  if(cu.type==='staff'){reqs=loadAllForStaff();}
-  else{reqs=loadR();}
   document.getElementById('authScreen').style.display='none';
   const sh=document.getElementById('pageShell');
   sh.style.display='flex';
   document.getElementById('upname').textContent=u.short;
   buildNav();
   if(u.type==='client'){
-    // フォームはリセット済み（HTMLのデフォルト状態）
     if(document.getElementById('facilityName')) document.getElementById('facilityName').textContent=u.name;
     showPage('pageForm');
   } else {
-    buildFilter();showPage('pageStaff');renderStaff();
+    buildFilter();showPage('pageStaff');
   }
   setupAutoLock();
+  await initReqs();
+  if(u.type==='staff'){buildFilter();renderStaff();buildNav();}
+  else{renderHistory();buildNav();}
 }
 // 自動ロック（30分操作なしで自動ログアウト）
 let autoLockTimer=null;
@@ -1711,7 +1772,8 @@ async function doRegister(){
 /* ── LOGOUT ───────────────────────────────────────────────── */
 function doLogout(){
   clearTimeout(autoLockTimer);
-  clearSession();  // セッション削除（ログアウトボタンのみ）
+  clearSession();
+  unsubAll();
   reqs=[];cu=null;
   document.getElementById('pageShell').style.display='none';
   document.getElementById('authScreen').style.display='flex';
@@ -1838,20 +1900,16 @@ async function sendForm(){
   const kiki=getMI(),biko=document.getElementById('fbiko').value.trim(),ds=nowStr();
   const rec={id:Date.now(),kaisha:cu.short,kaishaFull:cu.name,shiji:shiji.value,kiki,biko,tanto,date:ds,status:'未定',acceptedBy:'',comments:[],editHistory:[],tenantId:cu.tenantId,images:uploadedImages.map(img=>({name:img.name,dataUrl:img.dataUrl}))};
   const btn=document.getElementById('sendBtn');btn.disabled=true;btn.innerHTML='<span>⏳</span> 送信中…';
+  reqs.push(rec);
+  saveReqToFirestore(rec);
   try{
     await emailjs.send(EJ_SVC,EJ_TPL,{shisetsumei:cu.name,shiji:shiji.value,kiki,biko:biko||'（なし）',tanto,date:ds,to_email:NOTIFY,from_email:"tung16208@gmail.com"});
-    reqs.push(rec);
-    localStorage.setItem(getTenantKey(cu.tenantId),JSON.stringify(reqs.filter(r=>r.tenantId===cu.tenantId)));
     showToast('✅ 依頼を送信しました！スタッフが確認次第、対応いたします。','ok');
-    buildNav();resetFormFields();
   }catch(e){
     console.error(e);
-    reqs.push(rec);
-    localStorage.setItem(getTenantKey(cu.tenantId),JSON.stringify(reqs.filter(r=>r.tenantId===cu.tenantId)));
     showToast('⚠️ メール送信に失敗しましたが、データは保存されました。','warn');
-    buildNav();resetFormFields();
   }
-  finally{uploadedImages=[];btn.disabled=false;btn.innerHTML='<span>📨</span> 依頼を送信する';}
+  finally{uploadedImages=[];btn.disabled=false;btn.innerHTML='<span>📨</span> 依頼を送信する';buildNav();resetFormFields();}
 }
 function showSubmitSuccess(warn){
   document.getElementById('formCard').innerHTML=`<div class="submit-success"><div class="ss-icon">${warn?'⚠️':'✅'}</div><div class="ss-title">${warn?'データを保存しました':'依頼を送信しました！'}</div><p class="ss-sub">${warn?'メール送信に失敗しましたが、データは保存されています。':'スタッフが確認次第、対応いたします。'}</p><button class="btn-ghost" onclick="restoreForm()">新しい依頼を作成</button></div>`;
@@ -1974,7 +2032,7 @@ function sendChatClient(id){
   const r=reqs.find(r=>r.id===id);if(!r)return;
   if(!r.comments)r.comments=[];
   r.comments.push({id:Date.now(),author:cu.short,date:nowStr(),text,fromClient:true});
-  clientSaveR();ta.value='';renderHistory();
+  clientSaveR(r);ta.value='';renderHistory();
   setTimeout(()=>{const card=document.getElementById(`hcard-${id}`);if(card&&!card.classList.contains('open'))toggleHcard(id);},50);
   showToast('📨 スタッフへメッセージを送信しました','ok');
   emailjs.send(EJ_SVC,EJ_TPL,{shisetsumei:r.kaishaFull||r.kaisha,shiji:`【メッセージ通知】${r.shiji}`,kiki:r.kiki,biko:text,tanto:cu.short,date:nowStr(),to_email:NOTIFY,from_email:"tung16208@gmail.com"}).catch(e=>console.error(e));
@@ -2000,7 +2058,7 @@ function confirmEdit(){
   if(!r.editHistory)r.editHistory=[];
   r.editHistory.push({date:nowStr(),by:cu.short,before:{shiji:r.shiji,kiki:r.kiki,tanto:r.tanto,biko:r.biko||''},after:{shiji:newShiji,kiki:newKiki,tanto:newTanto,biko:newBiko}});
   r.shiji=newShiji;r.kiki=newKiki;r.tanto=newTanto;r.biko=newBiko;
-  clientSaveR();closeEditModal();renderHistory();showToast('依頼を更新しました','ok');
+  clientSaveR(r);closeEditModal();renderHistory();showToast('依頼を更新しました','ok');
 }
 
 /* ── DELETE MODAL (client) ────────────────────────────────── */
@@ -2012,8 +2070,10 @@ function openDeleteModal(id){
 function closeDeleteModal(){document.getElementById('deleteModal').style.display='none';deleteTargetId=null;}
 function confirmDelete(){
   if(!deleteTargetId)return;
+  const r=reqs.find(r=>r.id===deleteTargetId);
   reqs=reqs.filter(r=>r.id!==deleteTargetId);
-  clientSaveR();closeDeleteModal();renderHistory();buildNav();showToast('依頼を削除しました','ok');
+  if(r){deleteReqFromFirestore(r.tenantId,r.id);}
+  closeDeleteModal();renderHistory();buildNav();showToast('依頼を削除しました','ok');
 }
 
 /* ── CLIENT EXCEL ─────────────────────────────────────────── */
@@ -2106,7 +2166,7 @@ function sendChatStaff(id){
   const r=reqs.find(r=>r.id===id);if(!r)return;
   if(!r.comments)r.comments=[];
   r.comments.push({id:Date.now(),author:cu.short,date:nowStr(),text,fromClient:false});
-  staffSaveR();ta.value='';
+  staffSaveR(r);ta.value='';
   const wasOpen=document.getElementById(`rc-${id}`)?.classList.contains('open');
   renderStaff();
   if(wasOpen){const card=document.getElementById(`rc-${id}`);if(card&&!card.classList.contains('open'))toggleRcard(id);}
@@ -2115,29 +2175,12 @@ function sendChatStaff(id){
 }
 
 /* ── STAFF ACTIONS ────────────────────────────────────────── */
-function staffSaveR(){
-  // スタッフが変更したデータを各テナントキーに分けて保存
-  const tenants={};
-  reqs.forEach(r=>{
-    if(!r.tenantId)return;
-    if(!tenants[r.tenantId])tenants[r.tenantId]=[];
-    tenants[r.tenantId].push(r);
-  });
-  Object.entries(tenants).forEach(([tid,data])=>{
-    try{localStorage.setItem(getTenantKey(tid),JSON.stringify(data));}catch(e){}
-  });
-}
-function clientSaveR(){
-  // クライアントは自分のテナントデータのみ保存
-  if(!cu||!cu.tenantId)return;
-  try{
-    localStorage.setItem(getTenantKey(cu.tenantId),JSON.stringify(reqs.filter(r=>r.tenantId===cu.tenantId)));
-  }catch(e){}
-}
-function chgSt(id,sel){const r=reqs.find(r=>r.id===id);if(!r)return;r.status=sel.value;staffSaveR();renderStaff();showToast(`「${sel.value}」に更新しました`,'ok');}
+
+
+function chgSt(id,sel){const r=reqs.find(r=>r.id===id);if(!r)return;r.status=sel.value;staffSaveR(r);renderStaff();showToast(`「${sel.value}」に更新しました`,'ok');}
 function accept(id){
   const r=reqs.find(r=>r.id===id);if(!r||r.acceptedBy)return;
-  r.acceptedBy=cu.short;if(r.status==='未定')r.status='実施中';staffSaveR();
+  r.acceptedBy=cu.short;if(r.status==='未定')r.status='実施中';staffSaveR(r);
   emailjs.send(EJ_SVC,EJ_TPL,{shisetsumei:r.kaishaFull||r.kaisha,shiji:`【対応通知】${r.shiji}`,kiki:r.kiki,biko:`${cu.short} が引き受けました`,tanto:r.tanto,date:r.date,to_email:NOTIFY,from_email:"tung16208@gmail.com"}).catch(e=>console.error(e));
   renderStaff();buildNav();showToast(`${r.kaisha} の案件を引き受けました`,'ok');
 }
@@ -2172,7 +2215,7 @@ function confirmTaihi(){
   const newStaff=document.getElementById('taihiSelect').value,prev=r.acceptedBy;
   r.acceptedBy=newStaff;if(!r.comments)r.comments=[];
   r.comments.push({id:Date.now(),author:cu.short,date:nowStr(),text:`🔄 引退: ${prev} → ${newStaff} に引き継ぎました`,fromClient:false});
-  staffSaveR();closeTaihiModal();renderStaff();showToast(`${newStaff} に引き継ぎました`,'ok');
+  staffSaveR(r);closeTaihiModal();renderStaff();showToast(`${newStaff} に引き継ぎました`,'ok');
 }
 
 /* ── PRIVACY ──────────────────────────────────────────────── */
@@ -2197,6 +2240,18 @@ function escHtml(str){return String(str||'').replace(/&/g,'&amp;').replace(/</g,
 function showToast(msg,type=''){
   const t=document.getElementById('toast');t.textContent=msg;t.className='show'+(type?' '+type:'');
   clearTimeout(t._timer);t._timer=setTimeout(()=>t.className='',3500);
+}
+function setSyncStatus(status){
+  // status: 'syncing' | 'ok' | 'error'
+  const badge=document.getElementById('syncBadge');
+  const dot=document.getElementById('syncDot');
+  const txt=document.getElementById('syncTxt');
+  if(!badge)return;
+  badge.style.display='flex';
+  dot.className='';
+  if(status==='syncing'){dot.classList.add('syncing');txt.textContent='同期中…';}
+  else if(status==='error'){dot.classList.add('error');txt.textContent='同期エラー';}
+  else{txt.textContent='同期済み';}
 }
 
 /* ── VOICE RECOGNITION (音声入力) ──────────────────────────── */
@@ -2344,86 +2399,9 @@ function showToast(msg,type=''){
   };
 })();
 
-/* ── AUTO-REFRESH (スタッフ向け自動更新) ──────────────────── */
-(function(){
-  // 最後に確認したデータのスナップショット（JSON文字列）
-  var lastSnapshot = '';
+/* ── REALTIME SYNC: handled by Firestore onSnapshot (see initReqs) ── */
 
-  function getSnapshot(){
-    // 全テナントキーのデータを結合してスナップショット生成
-    try{
-      var keys=Object.keys(localStorage).filter(function(k){return k.startsWith('ke_reqs_');});
-      return keys.sort().map(function(k){return localStorage.getItem(k)||'';}).join('|');
-    }catch(e){return '';}
-  }
-
-  function checkAndRefresh(){
-    // スタッフログイン中のみ動作
-    if(!cu||cu.type!=='staff')return;
-    var snap=getSnapshot();
-    if(snap!==lastSnapshot){
-      if(lastSnapshot!==''){
-        // データが変わった → 再読み込み
-        var currentPage=document.querySelector('.page.active');
-        // reqs配列を再構築
-        var allReqs=[];
-        try{
-          var keys=Object.keys(localStorage).filter(function(k){return k.startsWith('ke_reqs_');});
-          keys.forEach(function(k){
-            var d=JSON.parse(localStorage.getItem(k)||'[]');
-            allReqs=allReqs.concat(d);
-          });
-          reqs=allReqs;
-        }catch(ex){}
-        // スタッフダッシュボード表示中なら再レンダリング
-        if(currentPage&&currentPage.id==='pgStaff'){
-          buildFilter();renderStaff();buildNav();
-          showToast('🔔 新しい依頼が届きました','ok');
-        } else {
-          buildNav();
-        }
-      }
-      lastSnapshot=snap;
-    }
-  }
-
-  // ページ読み込み後にスナップショット初期化 & 5秒ごとにポーリング
-  window.addEventListener('load',function(){
-    setTimeout(function(){lastSnapshot=getSnapshot();},2000);
-    setInterval(checkAndRefresh,5000);
-  });
-
-  // 同一ブラウザの別タブからの変更もリアルタイム検知
-  window.addEventListener('storage',function(e){
-    if(e.key&&e.key.startsWith('ke_reqs_')){
-      checkAndRefresh();
-    }
-  });
-})();
-
-/* ── DEMO DATA ────────────────────────────────────────────── */
-// デモデータを各テナントキーに初期化（既存データがない場合のみ）
-(function initDemoData(){
-  const demoByTenant={
-    'T001':[{id:1001,kaisha:'スガテック',kaishaFull:'スガテック（株式会社スガテック）',shiji:'故障',kiki:'エアコン（A3-1）',biko:'異音がする',tanto:'山田 太郎',date:'2025/06/10 09:23',status:'完了',acceptedBy:'山田 太郎',comments:[],editHistory:[],tenantId:'T001'}],
-    'T002':[{id:1002,kaisha:'会社B',kaishaFull:'会社B（株式会社B）',shiji:'取替',kiki:'洗濯機（B2-3）',biko:'',tanto:'鈴木 花子',date:'2025/06/11 14:05',status:'実施中',acceptedBy:'山田 太郎',comments:[{id:1,author:'山田 太郎',date:'2025/06/11 15:00',text:'現地確認しました。部品を発注します。',fromClient:false}],editHistory:[],tenantId:'T002'}],
-    'T003':[{id:1004,kaisha:'会社C',kaishaFull:'会社C（株式会社C）',shiji:'故障',kiki:'冷蔵庫（C3-2）',biko:'冷えない',tanto:'佐藤 三郎',date:'2025/06/13 08:45',status:'未定',acceptedBy:'',comments:[],editHistory:[],tenantId:'T003'}]
-  };
-  Object.entries(demoByTenant).forEach(([tid,data])=>{
-    const key=getTenantKey(tid);
-    if(!localStorage.getItem(key)){
-      localStorage.setItem(key,JSON.stringify(data));
-    }
-  });
-})();
-(function listenToData(tenantId) {
-    onSnapshot(doc(db, "orders", tenantId), (doc) => {
-        if (doc.exists()) {
-            const newData = doc.data().content;
-            updateUI(newData); // Hàm bạn dùng để vẽ lại danh sách trên web
-        }
-    });
-});
+/* ── DEMO DATA: seeded to Firestore on first use ── */
 </script>
 
 <!-- ═══ MODAL: 画像ライトボックス ═══════════════════════════ -->
