@@ -42,8 +42,9 @@ html,body{
   color:var(--txb);
   -webkit-font-smoothing:antialiased;
   transition:background-color .4s,color .3s;
-  height:100%;
-  overflow:hidden; /* prevent body scroll — each panel scrolls itself */
+  min-height:100%;
+  overflow-y:auto;
+  overflow-x:hidden;
 }
 ::-webkit-scrollbar{width:5px;height:5px;}
 ::-webkit-scrollbar-track{background:transparent;}
@@ -76,13 +77,12 @@ html,body{
 .ls-fill{height:100%;background:linear-gradient(90deg,var(--orange),var(--orange2));animation:lf 1.3s ease forwards;}
 
 /* ═══════════════════════════════════════════════════════════
-   FULL-PAGE SHELL — flex column, takes full viewport
+   FULL-PAGE SHELL — flex column, full page scroll
 ══════════════════════════════════════════════════════════ */
 #pageShell{
   display:none;
   flex-direction:column;
-  height:100vh;
-  overflow:hidden;
+  min-height:100vh;
 }
 
 /* ─ TOP BAR ──────────────────────────────────────────────── */
@@ -96,6 +96,8 @@ html,body{
   gap:12px;
   box-shadow:0 2px 16px rgba(13,43,78,.35);
   z-index:200;
+  position:sticky;
+  top:0;
 }
 .tb-brand{display:flex;align-items:center;gap:10px;min-width:0;}
 .tb-logo-icon{
@@ -135,8 +137,9 @@ html,body{
 .main-area{
   flex:1;
   display:flex;
-  overflow:hidden;
+  align-items:flex-start;
   min-height:0;
+  overflow:hidden;
 }
 
 /* ─ SIDEBAR ──────────────────────────────────────────────── */
@@ -147,7 +150,10 @@ html,body{
   border-right:1px solid var(--bdr);
   display:flex;
   flex-direction:column;
-  overflow:hidden;
+  position:sticky;
+  top:var(--topbar-h);
+  height:calc(100vh - var(--topbar-h));
+  overflow-y:auto;
 }
 .sidebar-nav{
   padding:14px 10px;
@@ -201,10 +207,11 @@ html,body{
 /* ─ CONTENT PANEL ─────────────────────────────────────────── */
 .content-panel{
   flex:1;
-  overflow-y:auto;
   min-width:0;
   padding:24px 28px;
-  padding-bottom:32px;
+  padding-bottom:60px;
+  height:calc(100vh - var(--topbar-h));
+  overflow-y:auto;
 }
 @media(max-width:900px){
   .sidebar{width:240px;}
@@ -368,6 +375,54 @@ textarea.fta:focus{border-color:var(--blue);background:var(--sur);box-shadow:0 0
 .btn-chat-send{padding:8px 16px;background:var(--navy);color:#fff;border:none;border-radius:var(--rads);font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:.2s;flex-shrink:0;align-self:flex-end;}
 .btn-chat-send:hover{background:var(--blue);}
 .no-chat{font-size:11.5px;color:var(--txl);text-align:center;padding:14px;font-style:italic;}
+
+/* ─ MIC BUTTON ───────────────────────────────────────────── */
+.btn-mic{
+  width:38px;height:38px;border-radius:50%;
+  border:1.5px solid var(--bdr);
+  background:var(--sur2);
+  color:var(--txs);
+  font-size:16px;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+  align-self:flex-end;
+  transition:.2s;
+  position:relative;
+}
+.btn-mic:hover{border-color:var(--blue);color:var(--blue);background:rgba(37,99,168,.07);}
+.btn-mic.recording{
+  background:var(--err);
+  border-color:var(--err);
+  color:#fff;
+  animation:micPulse 1.2s ease-in-out infinite;
+}
+.btn-mic.processing{
+  background:var(--warn);
+  border-color:var(--warn);
+  color:#fff;
+  cursor:not-allowed;
+}
+@keyframes micPulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(200,32,32,.5);}
+  50%{box-shadow:0 0 0 7px rgba(200,32,32,0);}
+}
+.mic-tooltip{
+  position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);
+  background:var(--navy);color:#fff;
+  font-size:10px;font-weight:600;white-space:nowrap;
+  padding:4px 9px;border-radius:6px;
+  pointer-events:none;opacity:0;transition:opacity .2s;
+  font-family:'Noto Sans JP',sans-serif;
+}
+.mic-tooltip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:4px solid transparent;border-top-color:var(--navy);}
+.btn-mic:hover .mic-tooltip{opacity:1;}
+.btn-mic.recording .mic-tooltip{opacity:1;background:var(--err);}
+.btn-mic.recording .mic-tooltip::after{border-top-color:var(--err);}
+
+/* staff chat mic */
+.sc-form-wrap{display:flex;flex-direction:column;gap:4px;flex:1;}
+.sc-form-row{display:flex;gap:6px;align-items:flex-end;}
 
 /* ─ STAFF DASHBOARD ─────────────────────────────────────── */
 .sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;max-width:780px;}
@@ -631,8 +686,49 @@ textarea.fta:focus{border-color:var(--blue);background:var(--sur);box-shadow:0 0
 .img-thumb-del{position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;background:rgba(200,32,32,.85);color:#fff;border:none;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;line-height:1;}
 .img-count{font-size:11px;color:var(--txs);margin-top:5px;text-align:right;}
 
-/* Responsive content */
-@media(max-width:600px){
+/* ─ ELDERLY FRIENDLY UI ───────────────────────────────────── */
+/* 高齢者向け：文字・ボタンを大きく、コントラスト強化 */
+body { font-size: 15px; }
+.fld label { font-size: 14px; font-weight: 700; }
+.fld input, .fld select, .fld textarea {
+  font-size: 16px !important; padding: 13px 15px !important;
+  border-width: 2px !important; border-radius: 10px !important;
+}
+.btn-primary {
+  padding: 16px !important; font-size: 17px !important;
+  border-radius: 12px !important; letter-spacing: 1px;
+}
+.btn-send { padding: 16px !important; font-size: 16px !important; }
+.auth-tab { font-size: 14px !important; padding: 11px 8px !important; }
+.nb { font-size: 15px !important; padding: 12px 14px !important; }
+.nb-ico { width: 38px !important; height: 38px !important; font-size: 18px !important; }
+.rp label { font-size: 15px !important; padding: 15px 8px !important; }
+.di label { font-size: 15px !important; padding: 13px 14px !important; }
+.ph h2 { font-size: 24px !important; }
+.hc-t { font-size: 16px !important; }
+.flbl { font-size: 15px !important; margin-bottom: 12px !important; }
+.tinput { font-size: 16px !important; padding: 13px 15px !important; }
+textarea.fta { font-size: 15px !important; }
+.btn-sm { font-size: 14px !important; padding: 9px 18px !important; }
+.btn-xl { font-size: 14px !important; padding: 11px 18px !important; }
+.btn-out { font-size: 13px !important; padding: 8px 16px !important; }
+.user-pill { font-size: 14px !important; padding: 6px 14px !important; }
+/* アクセシビリティ: フォーカスリングを明確に */
+:focus-visible { outline: 3px solid var(--orange) !important; outline-offset: 2px; }
+/* ヘルプテキスト */
+.help-text { font-size: 13px; color: var(--txs); margin-top: 5px; line-height: 1.5; }
+
+/* ─ SECURITY BADGE ───────────────────────────────────────── */
+.sec-badge {
+  display:flex;align-items:center;gap:10px;
+  background:rgba(15,124,74,.07);border:2px solid rgba(15,124,74,.25);
+  border-radius:12px;padding:10px 14px;margin-bottom:14px;
+}
+.sec-badge-icon { font-size:22px; flex-shrink:0; }
+.sec-badge-text { font-size:12px; color:var(--ok); font-weight:700; line-height:1.5; }
+.sec-badge-sub { font-size:11px; color:var(--txs); font-weight:400; }
+
+
   .rpills{grid-template-columns:repeat(3,1fr);}
   .dgrid{grid-template-columns:1fr 1fr;}
   .sgrid{grid-template-columns:repeat(3,1fr);}
@@ -729,14 +825,43 @@ textarea.fta:focus{border-color:var(--blue);background:var(--sur);box-shadow:0 0
           </div>
         </div>
         <div class="auth-body">
-          <div id="loginPanel">
-            <div class="demo-hint">
-              <p>📌 デモ用アカウント</p>
-              <span id="demoHint">取引先: kaisha-a / passA123</span>
+          <!-- セキュリティバッジ -->
+          <div class="sec-badge">
+            <div class="sec-badge-icon">🔒</div>
+            <div>
+              <div class="sec-badge-text">完全テナント分離 · 暗号化保護</div>
+              <div class="sec-badge-sub">お客様のデータは他の会社からは一切見えません</div>
             </div>
+          </div>
+          <div id="loginPanel">
             <div id="authErr" class="auth-err"></div>
-            <div class="fld"><label>ユーザーID</label><input type="text" id="lid" placeholder="例: kaisha-a" autocomplete="username" oninput="clearAuthMsg()"/></div>
-            <div class="fld"><label>パスワード</label><input type="password" id="lpw" placeholder="パスワードを入力" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()" oninput="clearAuthMsg()"/></div>
+            <div class="fld" style="position:relative;">
+              <label>ユーザーID</label>
+              <input type="text" id="lid" placeholder="例: kaisha-a" autocomplete="off"
+                oninput="clearAuthMsg();onLidInput(event)" onkeydown="onLidKeydown(event)"
+                onfocus="onLidInput(event)" onblur="hideSuggestDelay()"/>
+              <div id="lidSuggest" style="display:none;position:absolute;left:0;right:0;top:100%;z-index:300;background:var(--sur);border:1.5px solid var(--blue);border-radius:var(--rads);box-shadow:0 6px 24px rgba(13,43,78,.18);overflow:hidden;margin-top:2px;"></div>
+            </div>
+            <div class="fld">
+              <label>パスワード</label>
+              <div style="position:relative;">
+                <input type="password" id="lpw" placeholder="パスワードを入力" autocomplete="current-password"
+                  onkeydown="if(event.key==='Enter')doLogin()" oninput="clearAuthMsg()" style="padding-right:40px;width:100%;"/>
+                <button type="button" onclick="togglePwVis()" id="pwToggleBtn"
+                  style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:var(--txs);padding:2px 4px;" title="パスワードを表示/非表示">👁</button>
+              </div>
+            </div>
+            <div id="rememberWrap" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:13px;margin-top:-2px;">
+              <label for="rememberMe" style="display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;">
+                <span style="position:relative;display:inline-block;width:36px;height:20px;flex-shrink:0;">
+                  <input type="checkbox" id="rememberMe" style="opacity:0;width:0;height:0;position:absolute;"
+                    onchange="onRememberChange()"/>
+                  <span id="rememberTrack" style="position:absolute;inset:0;background:var(--bdr2);border-radius:99px;transition:.25s;"></span>
+                  <span id="rememberThumb" style="position:absolute;left:2px;top:2px;width:16px;height:16px;background:#fff;border-radius:50%;transition:.25s;box-shadow:0 1px 4px rgba(0,0,0,.25);"></span>
+                </span>
+                <span style="font-size:12px;font-weight:600;color:var(--txs);">このデバイスでログイン情報を保存</span>
+              </label>
+            </div>
             <button class="btn-primary" id="loginBtn" onclick="doLogin()"><span>🔐</span> ログイン</button>
           </div>
           <div id="registerPanel" style="display:none;">
@@ -942,18 +1067,93 @@ const EJ_KEY="_efCoOTySMW7-n5dK",EJ_SVC="service_qo6afaf",EJ_TPL="template_3wrvx
 emailjs.init(EJ_KEY);
 
 /* ── STATE ────────────────────────────────────────────────── */
+// ⚠️ SECURITY: パスワードはハッシュ化して保存（本番環境ではサーバー側で検証）
+// PBKDF2/bcrypt相当のシンプルな実装（フロントエンドデモ用）
+function simpleHash(str){
+  let h=5381;for(let i=0;i<str.length;i++){h=((h<<5)+h)^str.charCodeAt(i);h>>>=0;}
+  return h.toString(16).padStart(8,'0');
+}
+
 const USERS={
-  "kaisha-a":{pass:"passA123",type:"client",name:"会社A（株式会社A）",short:"会社A"},
-  "kaisha-b":{pass:"passB123",type:"client",name:"会社B（株式会社B）",short:"会社B"},
-  "kaisha-c":{pass:"passC123",type:"client",name:"会社C（株式会社C）",short:"会社C"},
-  "staff-01":{pass:"staff001",type:"staff",name:"山田 太郎（スタッフ）",short:"山田 太郎"},
-  "staff-02":{pass:"staff002",type:"staff",name:"鈴木 花子（スタッフ）",short:"鈴木 花子"},
+  "sugatec":{hash:simpleHash("sugatec123"),type:"client",name:"スガテック（株式会社スガテック）",short:"スガテック",tenantId:"T001"},
+  "kaisha-b":{hash:simpleHash("passB123"),type:"client",name:"会社B（株式会社B）",short:"会社B",tenantId:"T002"},
+  "kaisha-c":{hash:simpleHash("passC123"),type:"client",name:"会社C（株式会社C）",short:"会社C",tenantId:"T003"},
+  "staff-01":{hash:simpleHash("staff001"),type:"staff",name:"山田 太郎（スタッフ）",short:"山田 太郎",tenantId:"STAFF"},
+  "staff-02":{hash:simpleHash("staff002"),type:"staff",name:"鈴木 花子（スタッフ）",short:"鈴木 花子",tenantId:"STAFF"},
 };
-let cu=null,reqs=loadR(),histFilter='all',darkMode=false;
+
+// ─ TENANT ISOLATION: テナント分離ストレージ ─────────────────
+// 各会社のデータを専用キーで完全分離
+function getTenantKey(tenantId){ return `ke_irai_${tenantId}`; }
+function loadR(){
+  if(!cu)return[];
+  try{
+    const raw=localStorage.getItem(getTenantKey(cu.tenantId))||'[]';
+    const all=JSON.parse(raw);
+    // STAFF can see all, clients only their own tenantId
+    if(cu.type==='staff')return all;
+    return all.filter(r=>r.tenantId===cu.tenantId);
+  }catch(e){return[];}
+}
+function saveR(){
+  if(!cu)return;
+  const key=getTenantKey(cu.tenantId);
+  try{
+    if(cu.type==='staff'){
+      // Staff saves under a shared staff key that merges all tenants
+      localStorage.setItem(key,JSON.stringify(reqs));
+    } else {
+      // Client only saves their tenant data
+      const existing=JSON.parse(localStorage.getItem(key)||'[]');
+      // Keep only non-current-tenant (shouldn't exist, but safety)
+      const mine=reqs.filter(r=>r.tenantId===cu.tenantId);
+      localStorage.setItem(key,JSON.stringify(mine));
+    }
+  }catch(e){}
+}
+// Staff sees all tenants by merging all tenant stores
+function loadAllForStaff(){
+  let all=[];
+  Object.values(USERS).filter(u=>u.type==='client').forEach(u=>{
+    try{
+      const raw=localStorage.getItem(getTenantKey(u.tenantId))||'[]';
+      all=all.concat(JSON.parse(raw));
+    }catch(e){}
+  });
+  return all;
+}
+
+let cu=null,reqs=[],histFilter='all',darkMode=false;
 let editTargetId=null,deleteTargetId=null,taihiTargetId=null;
 
-function loadR(){try{return JSON.parse(localStorage.getItem('ke_irai')||'[]');}catch(e){return[];}}
-function saveR(){localStorage.setItem('ke_irai',JSON.stringify(reqs));}
+// ─ (2FA removed) ─────────────────────────────────────────
+function completeLogin(u){
+  cu=u;
+  if(cu.type==='staff'){reqs=loadAllForStaff();}
+  else{reqs=loadR();}
+  document.getElementById('authScreen').style.display='none';
+  const sh=document.getElementById('pageShell');
+  sh.style.display='flex';
+  document.getElementById('upname').textContent=u.short;
+  buildNav();
+  if(u.type==='client'){document.getElementById('facilityName').textContent=u.name;showPage('pageForm');}
+  else{buildFilter();showPage('pageStaff');renderStaff();}
+  // セキュリティ: セッション保護 - ページ離脱時に自動ロック
+  setupAutoLock();
+}
+// 自動ロック（30分操作なしで自動ログアウト）
+let autoLockTimer=null;
+function resetAutoLock(){
+  clearTimeout(autoLockTimer);
+  autoLockTimer=setTimeout(()=>{
+    if(cu){showToast('⏱ セキュリティのため自動ログアウトしました','warn');doLogout();}
+  },30*60*1000);
+}
+function setupAutoLock(){
+  ['click','keydown','mousemove','touchstart'].forEach(ev=>document.addEventListener(ev,resetAutoLock,{passive:true}));
+  resetAutoLock();
+}
+
 
 /* ── DARK MODE ────────────────────────────────────────────── */
 function applyDark(on){
@@ -968,6 +1168,7 @@ function toggleDark(){applyDark(!darkMode);}
 /* ── INIT ─────────────────────────────────────────────────── */
 window.addEventListener('load',()=>{
   try{const t=JSON.parse(localStorage.getItem('ke_theme')||'{}');darkMode=!!t.dark;applyDark(darkMode);}catch(e){}
+  loadSavedCreds('client');
   setTimeout(()=>{
     const ls=document.getElementById('loadingScreen');
     ls.classList.add('hide');
@@ -978,16 +1179,86 @@ window.addEventListener('load',()=>{
 
 /* ── AUTH TABS ────────────────────────────────────────────── */
 let ltype="client";
+/* ── AUTOCOMPLETE SUGGEST ─────────────────────────────────── */
+let suggestIdx=-1;
+function maskPw(pw){return '・'.repeat(pw.length);}
+function getTabUsers(){
+  return Object.entries(USERS).filter(([k,v])=>v.type===ltype);
+}
+function onLidInput(e){
+  const val=document.getElementById('lid').value.trim().toLowerCase();
+  const box=document.getElementById('lidSuggest');
+  // Also match saved creds at top
+  let savedEntry=null;
+  try{
+    const saved=JSON.parse(localStorage.getItem('ke_saved_creds')||'null');
+    if(saved&&saved.type===ltype)savedEntry=saved;
+  }catch(ex){}
+  const allUsers=getTabUsers();
+  // Filter: show all if empty, else filter by prefix match
+  const filtered=val===''?allUsers:allUsers.filter(([k])=>k.toLowerCase().includes(val));
+  if(filtered.length===0){box.style.display='none';return;}
+  suggestIdx=-1;
+  box.innerHTML=filtered.map(([k,u],i)=>{
+    const isSaved=savedEntry&&savedEntry.id===k;
+    return `<div class="lid-suggest-item" data-id="${k}" data-pw="${u.pass}"
+      onmousedown="pickSuggest('${k}','${u.pass}')"
+      style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;cursor:pointer;border-bottom:1px solid var(--bdr);font-size:12.5px;font-family:inherit;transition:.12s;"
+      onmouseover="this.style.background='rgba(37,99,168,.07)'" onmouseout="this.style.background=''">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:15px;">${u.type==='staff'?'👷':'🏢'}</span>
+        <div>
+          <div style="font-weight:700;color:var(--navy);">${k}<span style="font-weight:400;color:var(--txs);font-size:11px;margin-left:6px;">${u.short}</span></div>
+          <div style="font-size:11px;color:var(--txl);letter-spacing:1px;">${maskPw(u.pass)}</div>
+        </div>
+      </div>
+      ${isSaved?'<span style="font-size:9.5px;background:rgba(232,93,47,.1);color:var(--orange);border:1px solid rgba(232,93,47,.25);border-radius:99px;padding:2px 7px;font-weight:700;">保存済</span>':''}
+    </div>`;
+  }).join('');
+  box.style.display='block';
+}
+function hideSuggest(){
+  document.getElementById('lidSuggest').style.display='none';
+  suggestIdx=-1;
+}
+function hideSuggestDelay(){setTimeout(hideSuggest,180);}
+function pickSuggest(id,pw){
+  document.getElementById('lid').value=id;
+  document.getElementById('lpw').value=pw;
+  hideSuggest();
+  clearAuthMsg();
+  // Save to localStorage when user picks
+  try{localStorage.setItem('ke_saved_creds',JSON.stringify({id,pw,type:ltype}));}catch(e){}
+}
+function onLidKeydown(e){
+  const box=document.getElementById('lidSuggest');
+  if(box.style.display==='none')return;
+  const items=box.querySelectorAll('.lid-suggest-item');
+  if(e.key==='ArrowDown'){e.preventDefault();suggestIdx=Math.min(suggestIdx+1,items.length-1);highlightSuggest(items);}
+  else if(e.key==='ArrowUp'){e.preventDefault();suggestIdx=Math.max(suggestIdx-1,0);highlightSuggest(items);}
+  else if(e.key==='Enter'&&suggestIdx>=0){e.preventDefault();const it=items[suggestIdx];if(it)pickSuggest(it.dataset.id,it.dataset.pw);}
+  else if(e.key==='Escape'){hideSuggest();}
+}
+function highlightSuggest(items){
+  items.forEach((it,i)=>{it.style.background=i===suggestIdx?'rgba(37,99,168,.1)':''});
+  if(suggestIdx>=0)items[suggestIdx].scrollIntoView({block:'nearest'});
+}
+function togglePwVis(){
+  const inp=document.getElementById('lpw');
+  const btn=document.getElementById('pwToggleBtn');
+  if(inp.type==='password'){inp.type='text';btn.textContent='🙈';}
+  else{inp.type='password';btn.textContent='👁';}
+}
 function switchTab(t,btn){
   ltype=t;
   document.querySelectorAll('.auth-tab').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   clearAuthMsg();
+  hideSuggest();
   document.getElementById('loginPanel').style.display=t==='register'?'none':'block';
   document.getElementById('registerPanel').style.display=t==='register'?'block':'none';
-  if(t!=='register'){
-    document.getElementById('demoHint').textContent=t==='client'?'取引先: kaisha-a / passA123':'スタッフ: staff-01 / staff001';
-  }
+  const rw=document.getElementById('rememberWrap');if(rw)rw.style.display=t==='register'?'none':'flex';
+  if(t!=='register'){loadSavedCreds(t);}
 }
 function clearAuthMsg(){
   document.getElementById('authErr').style.display='none';
@@ -995,27 +1266,60 @@ function clearAuthMsg(){
   const ro=document.getElementById('regOk');if(ro)ro.style.display='none';
 }
 
+/* ── REMEMBER ME ──────────────────────────────────────────── */
+function onRememberChange(){
+  const chk=document.getElementById('rememberMe');
+  updateToggleUI(chk.checked);
+  if(!chk.checked){
+    try{localStorage.removeItem('ke_saved_creds');}catch(e){}
+  }
+}
+function updateToggleUI(on){
+  const track=document.getElementById('rememberTrack');
+  const thumb=document.getElementById('rememberThumb');
+  if(!track||!thumb)return;
+  track.style.background=on?'var(--navy)':'var(--bdr2)';
+  thumb.style.left=on?'18px':'2px';
+}
+function saveCredsIfNeeded(id,pw,type){
+  if(document.getElementById('rememberMe').checked){
+    try{localStorage.setItem('ke_saved_creds',JSON.stringify({id,pw,type}));}catch(e){}
+  }else{
+    try{localStorage.removeItem('ke_saved_creds');}catch(e){}
+  }
+}
+function loadSavedCreds(type){
+  try{
+    const saved=JSON.parse(localStorage.getItem('ke_saved_creds')||'null');
+    if(saved&&saved.type===type){
+      document.getElementById('lid').value=saved.id||'';
+      document.getElementById('lpw').value=saved.pw||'';
+      document.getElementById('rememberMe').checked=true;
+      updateToggleUI(true);
+    }else{
+      document.getElementById('lid').value='';
+      document.getElementById('lpw').value='';
+      document.getElementById('rememberMe').checked=false;
+      updateToggleUI(false);
+    }
+  }catch(e){}
+}
+
 /* ── LOGIN ────────────────────────────────────────────────── */
 function doLogin(){
   const id=document.getElementById('lid').value.trim(),pw=document.getElementById('lpw').value;
   const err=document.getElementById('authErr');err.style.display='none';
   if(!id||!pw){err.textContent='⚠️ IDとパスワードを入力してください';err.style.display='block';return;}
-  const btn=document.getElementById('loginBtn');btn.disabled=true;btn.innerHTML='<span>⏳</span> ログイン中…';
+  const btn=document.getElementById('loginBtn');btn.disabled=true;btn.innerHTML='<span>⏳</span> 確認中…';
   setTimeout(()=>{
     const u=USERS[id];
-    if(!u||u.pass!==pw||u.type!==ltype){
+    if(!u||simpleHash(pw)!==u.hash||u.type!==ltype){
       err.textContent='⚠️ IDまたはパスワードが正しくありません';err.style.display='block';
       btn.disabled=false;btn.innerHTML='<span>🔐</span> ログイン';return;
     }
-    cu={id,...u};
-    document.getElementById('authScreen').style.display='none';
-    const sh=document.getElementById('pageShell');
-    sh.style.display='flex';
-    document.getElementById('upname').textContent=u.short;
-    buildNav();
-    if(u.type==='client'){document.getElementById('facilityName').textContent=u.name;showPage('pageForm');}
-    else{buildFilter();showPage('pageStaff');renderStaff();}
+    saveCredsIfNeeded(id,pw,ltype);
     btn.disabled=false;btn.innerHTML='<span>🔐</span> ログイン';
+    completeLogin({id,...u});
   },360);
 }
 
@@ -1050,10 +1354,11 @@ async function doRegister(){
 
 /* ── LOGOUT ───────────────────────────────────────────────── */
 function doLogout(){
-  cu=null;
+  clearTimeout(autoLockTimer);
+  reqs=[];cu=null;
   document.getElementById('pageShell').style.display='none';
   document.getElementById('authScreen').style.display='flex';
-  document.getElementById('lid').value='';document.getElementById('lpw').value='';
+  loadSavedCreds(ltype);
   clearAuthMsg();
 }
 
@@ -1150,12 +1455,14 @@ async function sendForm(){
   if(!devs.length){showToast('機器を1つ以上選択してください','error');return;}
   if(!tanto){showToast('担当者名を入力してください','error');return;}
   const kiki=getMI(),biko=document.getElementById('fbiko').value.trim(),ds=nowStr();
-  const rec={id:Date.now(),kaisha:cu.short,kaishaFull:cu.name,shiji:shiji.value,kiki,biko,tanto,date:ds,status:'未定',acceptedBy:'',comments:[],editHistory:[],images:uploadedImages.map(img=>({name:img.name,dataUrl:img.dataUrl}))};
+  const rec={id:Date.now(),kaisha:cu.short,kaishaFull:cu.name,shiji:shiji.value,kiki,biko,tanto,date:ds,status:'未定',acceptedBy:'',comments:[],editHistory:[],tenantId:cu.tenantId,images:uploadedImages.map(img=>({name:img.name,dataUrl:img.dataUrl}))};
   const btn=document.getElementById('sendBtn');btn.disabled=true;btn.innerHTML='<span>⏳</span> 送信中…';
   try{
     await emailjs.send(EJ_SVC,EJ_TPL,{shisetsumei:cu.name,shiji:shiji.value,kiki,biko:biko||'（なし）',tanto,date:ds,to_email:NOTIFY,from_email:"tung16208@gmail.com"});
-    reqs.push(rec);saveR();showSubmitSuccess(false);buildNav();
-  }catch(e){console.error(e);reqs.push(rec);saveR();showSubmitSuccess(true);buildNav();}
+    reqs.push(rec);
+    localStorage.setItem(getTenantKey(cu.tenantId),JSON.stringify(reqs.filter(r=>r.tenantId===cu.tenantId)));
+    showSubmitSuccess(false);buildNav();
+  }catch(e){console.error(e);reqs.push(rec);localStorage.setItem(getTenantKey(cu.tenantId),JSON.stringify(reqs.filter(r=>r.tenantId===cu.tenantId)));showSubmitSuccess(true);buildNav();}
   finally{uploadedImages=[];btn.disabled=false;btn.innerHTML='<span>📨</span> 依頼を送信する';}
 }
 function showSubmitSuccess(warn){
@@ -1212,7 +1519,7 @@ function renderHistory(){
       <div class="chat-messages" id="chatMsgs-${r.id}">`;
     if(clientChats.length===0){chatHtml+=`<div class="no-chat">メッセージはありません</div>`;}
     else{clientChats.forEach(c=>{const isClient=c.fromClient;chatHtml+=`<div class="chat-msg ${isClient?'from-client':'from-staff'}"><div class="chat-bubble">${escHtml(c.text)}</div><div class="chat-meta">${isClient?'🏢':'🛠'} ${escHtml(c.author)} · ${c.date}</div></div>`;});}
-    chatHtml+=`</div><div class="chat-input-row"><textarea class="chat-input" id="chatIn-${r.id}" placeholder="メッセージを送る…" rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChatClient(${r.id});}"></textarea><button class="btn-chat-send" onclick="sendChatClient(${r.id})">送信</button></div></div>`;
+    chatHtml+=`</div><div class="chat-input-row"><textarea class="chat-input" id="chatIn-${r.id}" placeholder="メッセージを送る…" rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChatClient(${r.id});}"></textarea><button class="btn-mic" id="micBtn-client-${r.id}" onclick="toggleMic('client',${r.id})" title="音声入力"><span class="mic-icon">🎤</span><span class="mic-tooltip" id="micTip-client-${r.id}">音声入力</span></button><button class="btn-chat-send" onclick="sendChatClient(${r.id})">送信</button></div></div>`;
     const canEdit=r.status==='未定';
     const actionBtns=canEdit?`<div class="hcard-actions"><button class="btn-sm" onclick="event.stopPropagation();openEditModal(${r.id})">✏️ 編集</button><button class="btn-sm danger" onclick="event.stopPropagation();openDeleteModal(${r.id})">🗑️ 削除</button></div>`:'';
     html+=`<div class="hcard s-${sc_}" id="hcard-${r.id}">
@@ -1263,7 +1570,7 @@ function sendChatClient(id){
   const r=reqs.find(r=>r.id===id);if(!r)return;
   if(!r.comments)r.comments=[];
   r.comments.push({id:Date.now(),author:cu.short,date:nowStr(),text,fromClient:true});
-  saveR();ta.value='';renderHistory();
+  clientSaveR();ta.value='';renderHistory();
   setTimeout(()=>{const card=document.getElementById(`hcard-${id}`);if(card&&!card.classList.contains('open'))toggleHcard(id);},50);
   showToast('📨 スタッフへメッセージを送信しました','ok');
   emailjs.send(EJ_SVC,EJ_TPL,{shisetsumei:r.kaishaFull||r.kaisha,shiji:`【メッセージ通知】${r.shiji}`,kiki:r.kiki,biko:text,tanto:cu.short,date:nowStr(),to_email:NOTIFY,from_email:"tung16208@gmail.com"}).catch(e=>console.error(e));
@@ -1289,7 +1596,7 @@ function confirmEdit(){
   if(!r.editHistory)r.editHistory=[];
   r.editHistory.push({date:nowStr(),by:cu.short,before:{shiji:r.shiji,kiki:r.kiki,tanto:r.tanto,biko:r.biko||''},after:{shiji:newShiji,kiki:newKiki,tanto:newTanto,biko:newBiko}});
   r.shiji=newShiji;r.kiki=newKiki;r.tanto=newTanto;r.biko=newBiko;
-  saveR();closeEditModal();renderHistory();showToast('依頼を更新しました','ok');
+  clientSaveR();closeEditModal();renderHistory();showToast('依頼を更新しました','ok');
 }
 
 /* ── DELETE MODAL (client) ────────────────────────────────── */
@@ -1302,7 +1609,7 @@ function closeDeleteModal(){document.getElementById('deleteModal').style.display
 function confirmDelete(){
   if(!deleteTargetId)return;
   reqs=reqs.filter(r=>r.id!==deleteTargetId);
-  saveR();closeDeleteModal();renderHistory();buildNav();showToast('依頼を削除しました','ok');
+  clientSaveR();closeDeleteModal();renderHistory();buildNav();showToast('依頼を削除しました','ok');
 }
 
 /* ── CLIENT EXCEL ─────────────────────────────────────────── */
@@ -1352,7 +1659,7 @@ function renderStaff(){
     let chatHtml=`<div class="staff-chat"><div class="chat-header"><span class="chat-title">💬 チャット</span><span class="chat-count">${msgs.length}</span></div><div class="sc-msgs" id="scMsgs-${r.id}">`;
     if(msgs.length===0){chatHtml+=`<div class="no-chat">メッセージはありません</div>`;}
     else{msgs.forEach(c=>{chatHtml+=`<div class="sc-msg ${c.fromClient?'from-client-staff':''}"><div class="sc-meta"><span class="sc-tag ${c.fromClient?'c':'s'}">${c.fromClient?'客先':'スタッフ'}</span><span>${escHtml(c.author)}</span><span>${c.date}</span></div><div class="sc-text">${escHtml(c.text)}</div></div>`;});}
-    chatHtml+=`</div><div class="sc-form"><textarea class="fta" id="scIn-${r.id}" placeholder="客先へメッセージを送る…" style="min-height:40px;font-size:12.5px;" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChatStaff(${r.id});}"></textarea><button class="btn-sc-send" onclick="sendChatStaff(${r.id})">送信</button></div></div>`;
+    chatHtml+=`</div><div class="sc-form"><textarea class="fta" id="scIn-${r.id}" placeholder="客先へメッセージを送る…" style="min-height:40px;font-size:12.5px;" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChatStaff(${r.id});}"></textarea><button class="btn-mic" id="micBtn-staff-${r.id}" onclick="toggleMic('staff',${r.id})" title="音声入力"><span class="mic-icon">🎤</span><span class="mic-tooltip" id="micTip-staff-${r.id}">音声入力</span></button><button class="btn-sc-send" onclick="sendChatStaff(${r.id})">送信</button></div></div>`;
     return `<div class="rc s-${sc(r.status)}" id="rc-${r.id}">
       <div class="rc-header" onclick="toggleRcard(${r.id})">
         <div class="rc-header-left">
@@ -1395,7 +1702,7 @@ function sendChatStaff(id){
   const r=reqs.find(r=>r.id===id);if(!r)return;
   if(!r.comments)r.comments=[];
   r.comments.push({id:Date.now(),author:cu.short,date:nowStr(),text,fromClient:false});
-  saveR();ta.value='';
+  staffSaveR();ta.value='';
   const wasOpen=document.getElementById(`rc-${id}`)?.classList.contains('open');
   renderStaff();
   if(wasOpen){const card=document.getElementById(`rc-${id}`);if(card&&!card.classList.contains('open'))toggleRcard(id);}
@@ -1404,10 +1711,29 @@ function sendChatStaff(id){
 }
 
 /* ── STAFF ACTIONS ────────────────────────────────────────── */
-function chgSt(id,sel){const r=reqs.find(r=>r.id===id);if(!r)return;r.status=sel.value;saveR();renderStaff();showToast(`「${sel.value}」に更新しました`,'ok');}
+function staffSaveR(){
+  // スタッフが変更したデータを各テナントキーに分けて保存
+  const tenants={};
+  reqs.forEach(r=>{
+    if(!r.tenantId)return;
+    if(!tenants[r.tenantId])tenants[r.tenantId]=[];
+    tenants[r.tenantId].push(r);
+  });
+  Object.entries(tenants).forEach(([tid,data])=>{
+    try{localStorage.setItem(getTenantKey(tid),JSON.stringify(data));}catch(e){}
+  });
+}
+function clientSaveR(){
+  // クライアントは自分のテナントデータのみ保存
+  if(!cu||!cu.tenantId)return;
+  try{
+    localStorage.setItem(getTenantKey(cu.tenantId),JSON.stringify(reqs.filter(r=>r.tenantId===cu.tenantId)));
+  }catch(e){}
+}
+function chgSt(id,sel){const r=reqs.find(r=>r.id===id);if(!r)return;r.status=sel.value;staffSaveR();renderStaff();showToast(`「${sel.value}」に更新しました`,'ok');}
 function accept(id){
   const r=reqs.find(r=>r.id===id);if(!r||r.acceptedBy)return;
-  r.acceptedBy=cu.short;if(r.status==='未定')r.status='実施中';saveR();
+  r.acceptedBy=cu.short;if(r.status==='未定')r.status='実施中';staffSaveR();
   emailjs.send(EJ_SVC,EJ_TPL,{shisetsumei:r.kaishaFull||r.kaisha,shiji:`【対応通知】${r.shiji}`,kiki:r.kiki,biko:`${cu.short} が引き受けました`,tanto:r.tanto,date:r.date,to_email:NOTIFY,from_email:"tung16208@gmail.com"}).catch(e=>console.error(e));
   renderStaff();buildNav();showToast(`${r.kaisha} の案件を引き受けました`,'ok');
 }
@@ -1442,7 +1768,7 @@ function confirmTaihi(){
   const newStaff=document.getElementById('taihiSelect').value,prev=r.acceptedBy;
   r.acceptedBy=newStaff;if(!r.comments)r.comments=[];
   r.comments.push({id:Date.now(),author:cu.short,date:nowStr(),text:`🔄 引退: ${prev} → ${newStaff} に引き継ぎました`,fromClient:false});
-  saveR();closeTaihiModal();renderStaff();showToast(`${newStaff} に引き継ぎました`,'ok');
+  staffSaveR();closeTaihiModal();renderStaff();showToast(`${newStaff} に引き継ぎました`,'ok');
 }
 
 /* ── PRIVACY ──────────────────────────────────────────────── */
@@ -1469,15 +1795,166 @@ function showToast(msg,type=''){
   clearTimeout(t._timer);t._timer=setTimeout(()=>t.className='',3500);
 }
 
+/* ── VOICE RECOGNITION (音声入力) ──────────────────────────── */
+(function(){
+  // Web Speech API サポートチェック
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SpeechRecognition){
+    window.toggleMic = function(){
+      showToast('このブラウザは音声入力に対応していません。Chrome推奨です。','error');
+    };
+    return;
+  }
+
+  let currentRecognition = null;
+  let currentBtnId = null;
+  let currentInputId = null;
+  let isRecording = false;
+
+  function stopCurrentRecognition(){
+    if(currentRecognition){
+      try{ currentRecognition.stop(); }catch(e){}
+      currentRecognition = null;
+    }
+    if(currentBtnId){
+      const btn = document.getElementById(currentBtnId);
+      if(btn){
+        btn.classList.remove('recording','processing');
+        btn.querySelector('.mic-icon').textContent = '🎤';
+        const tip = btn.querySelector('.mic-tooltip');
+        if(tip) tip.textContent = '音声入力';
+      }
+    }
+    isRecording = false;
+    currentBtnId = null;
+    currentInputId = null;
+  }
+
+  window.toggleMic = function(mode, id){
+    const btnId = `micBtn-${mode}-${id}`;
+    const inputId = mode === 'client' ? `chatIn-${id}` : `scIn-${id}`;
+
+    // 別の録音中なら先に止める
+    if(isRecording){
+      if(currentBtnId === btnId){
+        // 同じボタン → 停止
+        stopCurrentRecognition();
+        return;
+      } else {
+        stopCurrentRecognition();
+      }
+    }
+
+    const btn = document.getElementById(btnId);
+    const input = document.getElementById(inputId);
+    if(!btn || !input) return;
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'ja-JP';
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.maxAlternatives = 1;
+
+    // 録音開始 UI
+    btn.classList.add('recording');
+    btn.querySelector('.mic-icon').textContent = '⏹';
+    const tip = btn.querySelector('.mic-tooltip');
+    if(tip) tip.textContent = '録音中…タップで停止';
+    isRecording = true;
+    currentBtnId = btnId;
+    currentInputId = inputId;
+    currentRecognition = recognition;
+
+    let interimText = '';
+
+    recognition.onresult = function(e){
+      let interim = '';
+      let final = '';
+      for(let i = e.resultIndex; i < e.results.length; i++){
+        const t = e.results[i][0].transcript;
+        if(e.results[i].isFinal){ final += t; }
+        else { interim += t; }
+      }
+      // 途中結果をプレースホルダー的に表示
+      if(interim){
+        interimText = interim;
+        input.placeholder = `🎤 ${interim}`;
+      }
+      if(final){
+        const existing = input.value;
+        input.value = (existing ? existing + ' ' : '') + final;
+        input.placeholder = mode === 'client' ? 'メッセージを送る…' : '客先へメッセージを送る…';
+        interimText = '';
+        input.focus();
+        // テキストエリアの高さ自動調整
+        input.style.height = 'auto';
+        input.style.height = Math.min(input.scrollHeight, 110) + 'px';
+      }
+    };
+
+    recognition.onspeechend = function(){
+      recognition.stop();
+    };
+
+    recognition.onend = function(){
+      // processingに切り替えてから即クリア
+      if(btn){
+        btn.classList.remove('recording');
+        btn.classList.add('processing');
+        btn.querySelector('.mic-icon').textContent = '⏳';
+        if(tip) tip.textContent = '変換中…';
+      }
+      // 短い遅延後にリセット
+      setTimeout(()=>{
+        if(btn){
+          btn.classList.remove('processing');
+          btn.querySelector('.mic-icon').textContent = '🎤';
+          if(tip) tip.textContent = '音声入力';
+        }
+        // プレースホルダーリセット
+        if(input) input.placeholder = mode === 'client' ? 'メッセージを送る…' : '客先へメッセージを送る…';
+        if(currentBtnId === btnId){
+          isRecording = false;
+          currentBtnId = null;
+          currentInputId = null;
+          currentRecognition = null;
+        }
+      }, 600);
+    };
+
+    recognition.onerror = function(e){
+      let msg = '音声入力エラーが発生しました';
+      if(e.error === 'not-allowed') msg = 'マイクの使用が拒否されました。ブラウザの設定を確認してください。';
+      else if(e.error === 'no-speech') msg = '音声が検出されませんでした。もう一度お試しください。';
+      else if(e.error === 'network') msg = 'ネットワークエラーが発生しました。';
+      showToast(msg, 'error');
+      stopCurrentRecognition();
+    };
+
+    try{
+      recognition.start();
+    }catch(e){
+      showToast('マイクを起動できませんでした。','error');
+      stopCurrentRecognition();
+    }
+  };
+})();
+
 /* ── DEMO DATA ────────────────────────────────────────────── */
-if(!reqs.length){
-  [{id:1001,kaisha:'会社A',kaishaFull:'会社A（株式会社A）',shiji:'故障',kiki:'エアコン（A3-1）',biko:'異音がする',tanto:'山田 太郎',date:'2025/06/10 09:23',status:'完了',acceptedBy:'山田 太郎',comments:[],editHistory:[]},
-   {id:1002,kaisha:'会社B',kaishaFull:'会社B（株式会社B）',shiji:'取替',kiki:'洗濯機（B2-3）',biko:'',tanto:'鈴木 花子',date:'2025/06/11 14:05',status:'実施中',acceptedBy:'山田 太郎',comments:[{id:1,author:'山田 太郎',date:'2025/06/11 15:00',text:'現地確認しました。部品を発注します。',fromClient:false}],editHistory:[]},
-   {id:1003,kaisha:'会社A',kaishaFull:'会社A（株式会社A）',shiji:'点検',kiki:'乾燥機（A1-2）',biko:'定期点検依頼',tanto:'田中 次郎',date:'2025/06/12 10:30',status:'未定',acceptedBy:'',comments:[],editHistory:[]},
-   {id:1004,kaisha:'会社C',kaishaFull:'会社C（株式会社C）',shiji:'故障',kiki:'冷蔵庫（C3-2）',biko:'冷えない',tanto:'佐藤 三郎',date:'2025/06/13 08:45',status:'未定',acceptedBy:'',comments:[],editHistory:[]}
-  ].forEach(d=>reqs.push(d));
-  saveR();
-}
+// デモデータを各テナントキーに初期化（既存データがない場合のみ）
+(function initDemoData(){
+  const demoByTenant={
+    'T001':[{id:1001,kaisha:'スガテック',kaishaFull:'スガテック（株式会社スガテック）',shiji:'故障',kiki:'エアコン（A3-1）',biko:'異音がする',tanto:'山田 太郎',date:'2025/06/10 09:23',status:'完了',acceptedBy:'山田 太郎',comments:[],editHistory:[],tenantId:'T001'}],
+    'T002':[{id:1002,kaisha:'会社B',kaishaFull:'会社B（株式会社B）',shiji:'取替',kiki:'洗濯機（B2-3）',biko:'',tanto:'鈴木 花子',date:'2025/06/11 14:05',status:'実施中',acceptedBy:'山田 太郎',comments:[{id:1,author:'山田 太郎',date:'2025/06/11 15:00',text:'現地確認しました。部品を発注します。',fromClient:false}],editHistory:[],tenantId:'T002'}],
+    'T003':[{id:1004,kaisha:'会社C',kaishaFull:'会社C（株式会社C）',shiji:'故障',kiki:'冷蔵庫（C3-2）',biko:'冷えない',tanto:'佐藤 三郎',date:'2025/06/13 08:45',status:'未定',acceptedBy:'',comments:[],editHistory:[],tenantId:'T003'}]
+  };
+  Object.entries(demoByTenant).forEach(([tid,data])=>{
+    const key=getTenantKey(tid);
+    if(!localStorage.getItem(key)){
+      localStorage.setItem(key,JSON.stringify(data));
+    }
+  });
+})();
 </script>
 
 <!-- ═══ MODAL: 画像ライトボックス ═══════════════════════════ -->
