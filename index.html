@@ -11,7 +11,23 @@
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d2b4e'/%3E%3Ctext x='50%25' y='56%25' dominant-baseline='middle' text-anchor='middle' font-size='38' font-family='serif' fill='white'%3E%E9%9B%BB%3C/text%3E%3C/svg%3E"/>
-<script>(function(){try{var t=JSON.parse(localStorage.getItem('ke_theme')||'{}');if(t.dark)document.documentElement.setAttribute('data-theme','dark');}catch(e){}}());</script>
+<script>// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBY1hisEWTccBZxEDP7cBl8_CnJrCaJ2hM",
+  authDomain: "kanie-b23cb.firebaseapp.com",
+  projectId: "kanie-b23cb",
+  storageBucket: "kanie-b23cb.firebasestorage.app",
+  messagingSenderId: "1073759973109",
+  appId: "1:1073759973109:web:c459eec083aa3f3fc65fbc",
+  measurementId: "G-FLKN6SNCDC"
+};
+
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);</script>
+<script>(function(){try{var t=JSON.parseke_theme(localStorage.getItem('')||'{}');if(t.dark)document.documentElement.setAttribute('data-theme','dark');}catch(e){}}());</script>
 <style>
 
 :root{
@@ -1006,6 +1022,7 @@ textarea.fta { font-size: 15px !important; }
   .mbn-label { font-size: 9px; }
   .mbn-icon { font-size: 20px; }
 }
+
 </style>
 </head>
 <body>
@@ -2385,6 +2402,14 @@ function showToast(msg,type=''){
     }
   });
 })();
+(function listenToData(tenantId) {
+    onSnapshot(doc(db, "orders", tenantId), (doc) => {
+        if (doc.exists()) {
+            const newData = doc.data().content;
+            updateUI(newData); // Hàm bạn dùng để vẽ lại danh sách trên web
+        }
+    });
+});
 </script>
 
 <!-- ═══ MODAL: 画像ライトボックス ═══════════════════════════ -->
