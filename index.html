@@ -14,7 +14,19 @@
 <script>// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
+import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.x.x/firebase-firestore.js";
 
+async function saveToFirebase(tenantId, newData) {
+    try {
+        await setDoc(doc(db, "orders", tenantId), {
+            content: newData,
+            updatedAt: new Date() // Lưu thêm thời gian để dễ quản lý
+        });
+        alert("成功!");
+    } catch (e) {
+        console.error("エラー: ", e);
+    }
+}
 const firebaseConfig = {
   apiKey: "AIzaSyBY1hisEWTccBZxEDP7cBl8_CnJrCaJ2hM",
   authDomain: "kanie-b23cb.firebaseapp.com",
