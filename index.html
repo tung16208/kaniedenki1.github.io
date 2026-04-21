@@ -29,7 +29,9 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);</script>
 <script>(function(){try{var t=JSON.parseke_theme(localStorage.getItem('')||'{}');if(t.dark)document.documentElement.setAttribute('data-theme','dark');}catch(e){}}());</script>
 <style>
-
+async function saveData(tenantId, data) {
+    await setDoc(doc(db, "orders", tenantId), { content: data });
+}
 :root{
   --navy:#0d2b4e;--navy2:#1a3f6b;--navy3:#0a1f3a;
   --blue:#2563a8;--blue2:#3b82f6;
