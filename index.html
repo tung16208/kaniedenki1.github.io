@@ -1113,13 +1113,20 @@ function initReqs(){
 }
 
 function saveReq(req){
-  if(!req || !req.id) return;
+  if(!req || !req.id) return Promise.resolve();
   setSyncStatus('syncing');
-  _waitFb(async () => {
-    try {
-      await window._fs.setDoc(window._fs.doc(window._db, `tenants/${TENANT_ID}/reqs`, String(req.id)), req);
-      setSyncStatus('ok');
-    } catch(e){ console.error(e); setSyncStatus('error'); showToast('⚠️ 同期エラーが発生しました', 'error'); }
+  return new Promise((resolve, reject) => {
+    _waitFb(async () => {
+      try {
+        await window._fs.setDoc(window._fs.doc(window._db, `tenants/${TENANT_ID}/reqs`, String(req.id)), req);
+        setSyncStatus('ok');
+        resolve();
+      } catch(e){
+        console.error(e);
+        setSyncStatus('error');
+        reject(e);
+      }
+    });
   });
 }
 
@@ -1175,12 +1182,41 @@ function handleDrop(e){
   processFiles(Array.from(e.dataTransfer.files).filter(f=>f.type.startsWith('image/')));
 }
 function handleImgSelect(e){processFiles(Array.from(e.target.files));e.target.value='';}
+/* ══ IMAGE COMPRESSION (mobile fix) ═════════════════════ */
+function compressImage(dataUrl, maxPx, quality){
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => {
+      let w = img.width, h = img.height;
+      if(w > maxPx || h > maxPx){
+        if(w > h){ h = Math.round(h * maxPx / w); w = maxPx; }
+        else { w = Math.round(w * maxPx / h); h = maxPx; }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL('image/jpeg', quality));
+    };
+    img.onerror = () => resolve(dataUrl); // fallback if something fails
+    img.src = dataUrl;
+  });
+}
+
 function processFiles(files){
   const rem = 5 - uploadedImages.length;
   if(!rem){showToast('写真は最大5枚までです','warn');return;}
   files.slice(0,rem).forEach(f=>{
     const r = new FileReader();
-    r.onload = ev => {uploadedImages.push({name:f.name,dataUrl:ev.target.result});renderImgPreviews();};
+    r.onload = async ev => {
+      try {
+        // Compress to max 1200px, quality 0.75 — keeps each image ~150-300KB
+        const compressed = await compressImage(ev.target.result, 1200, 0.75);
+        uploadedImages.push({name: f.name.replace(/\.[^.]+$/, '.jpg'), dataUrl: compressed});
+      } catch(e) {
+        uploadedImages.push({name: f.name, dataUrl: ev.target.result});
+      }
+      renderImgPreviews();
+    };
     r.readAsDataURL(f);
   });
 }
@@ -1220,18 +1256,23 @@ async function sendForm(){
   const btn = document.getElementById('sendBtn');
   btn.disabled = true; btn.innerHTML = '<span>⏳</span> 送信中…';
 
-  saveReq(rec);
-
+  // ── Step 1: Save to Firebase (AWAIT — must succeed before showing success)
   try {
-    await emailjs.send(EJ_SVC, EJ_TPL, {
-      shisetsumei: TENANT_FULL, shiji: shiji.value, kiki,
-      biko: biko || '（なし）', tanto, date: rec.date,
-      to_email: NOTIFY, from_email: "tung16208@gmail.com"
-    });
-    showToast('✅ 依頼を送信しました！スタッフが確認次第、対応いたします。', 'ok');
-  } catch(e){
-    showToast('⚠️ データは保存されました。メール送信に失敗しました。', 'warn');
+    await saveReq(rec);
+  } catch(e) {
+    showToast('⚠️ 送信に失敗しました。インターネット接続を確認してください。', 'error');
+    btn.disabled = false; btn.innerHTML = '<span>📨</span> 依頼を送信する';
+    return;
   }
+
+  // ── Step 2: Email notification (don't block success UI on this)
+  emailjs.send(EJ_SVC, EJ_TPL, {
+    shisetsumei: TENANT_FULL, shiji: shiji.value, kiki,
+    biko: biko || '（なし）', tanto, date: rec.date,
+    to_email: NOTIFY, from_email: "tung16208@gmail.com"
+  }).catch(e => console.warn('email send failed (non-critical):', e));
+
+  showToast('✅ 依頼を送信しました！スタッフが確認次第、対応いたします。', 'ok');
 
   uploadedImages = [];
   renderImgPreviews();
