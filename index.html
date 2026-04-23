@@ -320,8 +320,20 @@ html,body{
 .rp label .ri{font-size:22px;}
 .rp input:checked+label{border-color:var(--green);background:rgba(26,74,46,.07);color:var(--green);box-shadow:0 0 0 3px rgba(26,74,46,.1);}
 
-/* Device grid */
-.dgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+/* Device grid — モバイル対応 */
+/* 各 .di を grid item にして、番号入力欄を同じ列内に収める */
+.dgrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  /* align-items:start で各セルが独立して高さ変化 */
+  align-items:start;
+}
+.di{
+  /* grid item 全体を flex column にして label+mnum を縦積み */
+  display:flex;
+  flex-direction:column;
+}
 .di input[type="checkbox"]{display:none;}
 .di label{
   display:flex;align-items:center;gap:8px;
@@ -329,22 +341,44 @@ html,body{
   border-radius:var(--rad);cursor:pointer;
   font-size:13px;font-weight:600;color:var(--txs);
   background:var(--sur2);transition:.18s;user-select:none;
+  /* labelが伸びないようにする */
+  flex-shrink:0;
 }
-.di label .di-ico{font-size:18px;}
-.di label .chk{margin-left:auto;opacity:0;transition:.18s;}
-.di input:checked+label{border-color:var(--green);background:rgba(26,74,46,.07);color:var(--green);}
-.di input:checked+label .chk{opacity:1;color:var(--green);}
-.di input:checked+label{border-bottom-left-radius:0;border-bottom-right-radius:0;border-bottom-color:transparent;}
-.mnum{max-height:0;overflow:hidden;transition:max-height .25s;}
-.mnum.show{max-height:60px;}
+.di label .di-ico{font-size:18px;flex-shrink:0;}
+.di label .chk{margin-left:auto;opacity:0;transition:.18s;color:var(--green);}
+.di input:checked+label{
+  border-color:var(--green);
+  background:rgba(26,74,46,.07);
+  color:var(--green);
+  border-bottom-left-radius:0;
+  border-bottom-right-radius:0;
+  border-bottom-color:transparent;
+}
+.di input:checked+label .chk{opacity:1;}
+/* 番号入力欄 — labelの真下にぴったり収まる */
+.mnum{
+  max-height:0;
+  overflow:hidden;
+  transition:max-height .3s ease;
+}
+.mnum.show{max-height:80px;}
 .mnum-in{
-  display:flex;align-items:center;gap:8px;
-  padding:7px 11px;background:rgba(26,74,46,.04);
+  display:flex;align-items:center;gap:6px;
+  padding:7px 10px;
+  background:rgba(26,74,46,.05);
   border:2px solid var(--green);border-top:none;
   border-radius:0 0 var(--rad) var(--rad);
 }
-.mnum-in label{font-size:11px;font-weight:700;color:var(--green);white-space:nowrap;flex-shrink:0;}
-.mnum-in input{flex:1;border:1.5px solid var(--bdr);border-radius:6px;padding:5px 8px;font-size:13px;font-family:inherit;outline:none;background:#fff;}
+.mnum-in label{
+  font-size:10.5px;font-weight:700;color:var(--green);
+  white-space:nowrap;flex-shrink:0;
+}
+.mnum-in input{
+  flex:1;min-width:0;
+  border:1.5px solid var(--bdr);border-radius:6px;
+  padding:5px 7px;font-size:13px;font-family:inherit;
+  outline:none;background:#fff;width:100%;
+}
 
 /* Textarea & text input */
 .tinput,.fta{
@@ -525,7 +559,9 @@ html,body{
   .topbar{padding:0 12px;gap:8px;}
   .tb-badge{display:none;}
   .content-wrap{padding:14px 12px 80px;}
-  .dgrid{grid-template-columns:1fr 1fr !important;}
+  .dgrid{grid-template-columns:1fr 1fr;}
+  /* その他は常に全幅 */
+  .di[data-full]{grid-column:1/-1;}
   .rpills{grid-template-columns:repeat(3,1fr);}
   .card{padding:14px 12px;}
   #toast{bottom:74px;}
@@ -710,7 +746,7 @@ html,body{
             <div class="di"><input type="checkbox" id="d2" onchange="tn(this,'n2')"/><label for="d2"><span class="di-ico">🫧</span>洗濯機<span class="chk">✓</span></label><div class="mnum" id="n2"><div class="mnum-in"><label>番号</label><input type="text" id="no2" placeholder="例: B2-3"/></div></div></div>
             <div class="di"><input type="checkbox" id="d3" onchange="tn(this,'n3')"/><label for="d3"><span class="di-ico">🌀</span>乾燥機<span class="chk">✓</span></label><div class="mnum" id="n3"><div class="mnum-in"><label>番号</label><input type="text" id="no3" placeholder="例: C1-2"/></div></div></div>
             <div class="di"><input type="checkbox" id="d4" onchange="tn(this,'n4')"/><label for="d4"><span class="di-ico">🧊</span>冷蔵庫<span class="chk">✓</span></label><div class="mnum" id="n4"><div class="mnum-in"><label>番号</label><input type="text" id="no4" placeholder="例: D4-1"/></div></div></div>
-            <div class="di" style="grid-column:1/-1"><input type="checkbox" id="d5" onchange="tn(this,'n5')"/><label for="d5"><span class="di-ico">📦</span>その他<span class="chk">✓</span></label><div class="mnum" id="n5"><div class="mnum-in"><label>内容</label><input type="text" id="no5" placeholder="内容を入力してください"/></div></div></div>
+            <div class="di" data-full style="grid-column:1/-1"><input type="checkbox" id="d5" onchange="tn(this,'n5')"/><label for="d5"><span class="di-ico">📦</span>その他<span class="chk">✓</span></label><div class="mnum" id="n5"><div class="mnum-in"><label>内容</label><input type="text" id="no5" placeholder="内容を入力してください"/></div></div></div>
           </div>
         </div>
 
